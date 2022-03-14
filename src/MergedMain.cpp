@@ -6,8 +6,8 @@
 #define MOTOR_STOP 9
 
 // Replace with your network credentials
-const char* ssid = "MyAltice 4cd13d";
-const char* password = "4211-emerald-46";
+const char* ssid = "iPhone";
+const char* password = "esp32Connection";
 
 WiFiServer server(80); // Set web server port number to 80
 
