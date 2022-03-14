@@ -31,7 +31,7 @@ unsigned long previousTime = 0; // Previous time
 const long timeoutTime = 2000; // Define timeout time in milliseconds (example: 2000ms = 2s)
 
 void Clean() {
-  sleep(cooldown_time);
+  //sleep(cooldown_time);
   digitalWrite(MOTOR_PIN_1, HIGH);
   sleep(operation_time); // Does this stop the operations?
   digitalWrite(MOTOR_PIN_1, LOW);
