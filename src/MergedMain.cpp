@@ -111,7 +111,7 @@ void handleClient(WiFiClient client) {
             if (header.indexOf("GET /led/on") >= 0) {
               Serial.println("GPIO led on");
               Serial.println("Run Cleaning");
-              //Clean();
+              Clean();
               LEDState = "on";
             } else if (header.indexOf("GET /led/off") >= 0) {
               Serial.println("GPIO led off");
