@@ -110,7 +110,7 @@ void handleClient(WiFiClient client) {
             // turns the GPIOs on and off
             if (header.indexOf("GET /led/on") >= 0) {
               Serial.println("Run Cleaning");
-              Clean();
+              //Clean();
               LEDState = "on";
             } else if (header.indexOf("GET /led/off") >= 0) {
               LEDState = "off";
@@ -176,6 +176,13 @@ void loop() {
         client.stop();      //temp: to prevent infinite loop 
     }
     header = "";
+  
+  if (LEDState == "on"){
+    Serial.println("Testing");
+    Clean();
+    LEDState = "off";
+    handleClient(client);
+  }
   /*if (digitalRead(MOTOR_STOP) == HIGH) {
     Serial.print("I have stopped! Yay");
   }*/
