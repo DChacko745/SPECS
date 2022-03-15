@@ -177,10 +177,8 @@ void loop() {
   header = "";
   
   if (wipeState) {
-    Serial.println("Testing");
     Clean();
     wipeState = false;
-    handleClient(client);
   }
   /*if (digitalRead(MOTOR_STOP) == HIGH) {
     Serial.print("I have stopped! Yay");
