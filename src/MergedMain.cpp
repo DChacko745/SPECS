@@ -12,6 +12,7 @@ const char* password = "esp32Connection";
 WiFiServer server(80); // Set web server port number to 80
 
 bool connectedToApp = false;
+bool wipeState = false; // Auxiliar variables to store the current output state
 
 int wait_time = 7; // time between cleanings
 int operation_time = 5; // time for a sweep in one direction
@@ -23,7 +24,6 @@ float rain_threshold; // minimum value for rain sensor to accept its input
 float daylight_threshold; // minimum value for daylight sensor to accept its input
 
 String header; // Variable to store the HTTP request
-bool wipeState = false; // Auxiliar variables to store the current output state
 
 unsigned long currentTime = millis(); // Current time
 unsigned long previousTime = 0; // Previous time
