@@ -1,16 +1,18 @@
 #include <Arduino.h>
 #include <WiFi.h>
 
+//ESP Pin Definitions:
 #define MOTOR_PIN_1 25
 #define MOTOR_PIN_2 26
 #define MOTOR_STOP 9
 
-// Replace with your network credentials
+//Network Credentials:
 const char* ssid = "iPhone";
 const char* password = "esp32Connection";
 
 WiFiServer server(80); // Set web server port number to 80
 
+//Variables:
 bool connectedToApp = false;
 bool wipeState = false; // Auxiliar variables to store the current output state
 
@@ -114,7 +116,7 @@ void handleClient(WiFiClient client) {
             wipeState = true;
           } else if (header.indexOf("GET /led/off") >= 0) {
             wipeState = false;
-          }             
+          }
           // Display the HTML web page
           client.println("<!DOCTYPE html><html>");
           client.println("<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">");
@@ -137,7 +139,7 @@ void handleClient(WiFiClient client) {
           } else {
             client.println("<p><a href=\"/led/off\"><button class=\"button button2\">Cleaning</button></a></p>");
           } 
-              
+          
           client.println("</body></html>");
           
           // The HTTP response ends with another blank line
@@ -147,7 +149,8 @@ void handleClient(WiFiClient client) {
         } else { // if you got a newline, then clear currentLine
           currentLine = "";
         }
-      } else if (c != '\r') {  // if you got anything else but a carriage return character,
+      }
+      else if (c != '\r') {  // if you got anything else but a carriage return character,
         currentLine += c;      // add it to the end of the currentLine
       }
     }
