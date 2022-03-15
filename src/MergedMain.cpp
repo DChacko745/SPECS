@@ -23,7 +23,7 @@ float rain_threshold; // minimum value for rain sensor to accept its input
 float daylight_threshold; // minimum value for daylight sensor to accept its input
 
 String header; // Variable to store the HTTP request
-String LEDState = "off"; // Auxiliar variables to store the current output state
+bool wipeState = false; // Auxiliar variables to store the current output state
 
 unsigned long currentTime = millis(); // Current time
 unsigned long previousTime = 0; // Previous time
@@ -111,9 +111,9 @@ void handleClient(WiFiClient client) {
           if (header.indexOf("GET /led/on") >= 0) {
             Serial.println("Run Cleaning");
             //Clean();
-            LEDState = "on";
+            wipeState = true;
           } else if (header.indexOf("GET /led/off") >= 0) {
-            LEDState = "off";
+            wipeState = false;
           }             
           // Display the HTML web page
           client.println("<!DOCTYPE html><html>");
@@ -132,7 +132,7 @@ void handleClient(WiFiClient client) {
           // Display current state, and ON/OFF buttons for GPIO led  
           client.println("<p>Run a Cleaning</p>");
           // If the LEDState is off, it displays the ON button       
-          if (LEDState=="off") {
+          if (!wipeState) {
             client.println("<p><a href=\"/led/on\"><button class=\"button\">Clean</button></a></p>");
           } else {
             client.println("<p><a href=\"/led/off\"><button class=\"button button2\">Cleaning</button></a></p>");
@@ -171,15 +171,15 @@ void loop() {
   WiFiClient client = server.available();
 
   if (client) {                             // If a new client connects,
-        handleClient(client);
-        client.stop();      //temp: to prevent infinite loop 
-    }
-    header = "";
+    handleClient(client);
+    client.stop();       //temp: to prevent infinite loop 
+  }
+  header = "";
   
-  if (LEDState == "on"){
+  if (wipeState) {
     Serial.println("Testing");
     Clean();
-    LEDState = "off";
+    wipeState = false;
     handleClient(client);
   }
   /*if (digitalRead(MOTOR_STOP) == HIGH) {
