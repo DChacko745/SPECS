@@ -1,9 +1,17 @@
 #include <Arduino.h>
 #include <WiFi.h>
+#include <Adafruit_Sensor.h>
+#include <DHT.h>
 
 //ESP Pin Definitions:
 #define MOTOR_PIN_1 25
 #define MOTOR_PIN_2 26
+
+#define HT_SENSOR_PIN 27
+#define DHTTYPE DHT11
+DHT dht(HT_SENSOR_PIN, DHTTYPE);
+
+#define DAYLIGHT_SENSOR_PIN 14
 #define MOTOR_STOP 9
 
 //Network Credentials:
@@ -19,10 +27,10 @@ bool wipeStart = false;
 
 int wait_time = 7; // time between cleanings
 
-float temperature_threshold; // minimum value for temperature sensor to accept its input
-float humidity_threshold; // minimum value for humidity sensor to accept its input
+float temperature_threshold; // minimum value for temperature sensor to accept its input (in Fahrenheit)
+float humidity_threshold; // minimum value for humidity sensor to accept its input (20-80%)
 float rain_threshold; // minimum value for rain sensor to accept its input
-float daylight_threshold; // minimum value for daylight sensor to accept its input
+float daylight_threshold; // minimum value for daylight sensor to accept its input (0-4096)
 
 String header; // Variable to store the HTTP request
 
@@ -50,6 +58,18 @@ const long timeoutTime = 2000; // Define timeout time in milliseconds (example: 
 
 void ReadSensors() {
   // Has to run while system is sleeping
+
+  float h = dht.readHumidity();
+  float t = dht.readTemperature(true); // in Fahrenheit
+
+  Serial.println("Humidity:");
+  Serial.println(h, 5);
+  Serial.println("Temperature:");
+  Serial.println(t, 5);
+
+  int lightValue = analogRead(DAYLIGHT_SENSOR_PIN);
+  Serial.println("Daylight Value:");
+  Serial.println(lightValue);
 
   // Listens to sensors and calls Clean() if necessary
 
@@ -173,8 +193,10 @@ void setup() {
   digitalWrite(MOTOR_PIN_1, LOW);
   digitalWrite(MOTOR_PIN_2, LOW);
 
+  dht.begin();
+
   Serial.begin(115200);
-  CheckAppConnection();
+  //CheckAppConnection();
 }
 
 void loop() {
