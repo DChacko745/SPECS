@@ -4,7 +4,8 @@
 //ESP Pin Definitions:
 #define MOTOR_PIN_1 25
 #define MOTOR_PIN_2 26
-#define MOTOR_STOP 9
+#define MOTOR_STOP_CW 9
+#define MOTOR_STOP_CCW 10
 
 //Network Credentials:
 const char* ssid = "iPhone";
@@ -15,10 +16,12 @@ WiFiServer server(80); // Set web server port number to 80
 //Variables:
 bool connectedToApp = false;
 bool wipeState = false; // Auxiliar variables to store the current output state
+bool cooldownState = false;
 
 int wait_time = 7; // time between cleanings
-int operation_time = 5; // time for a sweep in one direction
-int cooldown_time = 5; // minimum time for system to cooldown before next operation
+int operation_time = 5000; // time for a sweep in one direction
+int cooldown_time = 5000; // minimum time for system to cooldown before next operation
+unsigned long start_time = 0;
 
 float temperature_threshold; // minimum value for temperature sensor to accept its input
 float humidity_threshold; // minimum value for humidity sensor to accept its input
@@ -31,6 +34,23 @@ unsigned long currentTime = millis(); // Current time
 unsigned long previousTime = 0; // Previous time
 
 const long timeoutTime = 2000; // Define timeout time in milliseconds (example: 2000ms = 2s)
+
+void WiperMoveCW() {
+  // Motor turns Clockwise
+  digitalWrite(MOTOR_PIN_2, LOW);
+  digitalWrite(MOTOR_PIN_1, HIGH);
+}
+
+void WiperMoveCCW() {
+  // Motor turns Counterclockwise
+  digitalWrite(MOTOR_PIN_1, LOW);
+  digitalWrite(MOTOR_PIN_2, HIGH);
+}
+
+void StopClean() {
+  digitalWrite(MOTOR_PIN_1, LOW);
+  digitalWrite(MOTOR_PIN_2, LOW);
+}
 
 void Clean() {
   //sleep(cooldown_time);
@@ -114,6 +134,7 @@ void handleClient(WiFiClient client) {
             Serial.println("Run Cleaning");
             //Clean();
             wipeState = true;
+            WiperMoveCW();
           } else if (header.indexOf("GET /led/off") >= 0) {
             wipeState = false;
           }
@@ -138,7 +159,7 @@ void handleClient(WiFiClient client) {
             client.println("<p><a href=\"/led/on\"><button class=\"button\">Clean</button></a></p>");
           } else {
             client.println("<p><a href=\"/led/off\"><button class=\"button button2\">Cleaning</button></a></p>");
-          } 
+          }
           
           client.println("</body></html>");
           
@@ -161,7 +182,8 @@ void setup() {
   // Set pinModes
   pinMode(MOTOR_PIN_1, OUTPUT);
   pinMode(MOTOR_PIN_2, OUTPUT); 
-  pinMode(MOTOR_STOP, INPUT_PULLUP);
+  pinMode(MOTOR_STOP_CW, INPUT_PULLUP);
+  pinMode(MOTOR_STOP_CCW, INPUT_PULLUP);
   digitalWrite(MOTOR_PIN_1, LOW);
   digitalWrite(MOTOR_PIN_2, LOW);
 
@@ -179,10 +201,37 @@ void loop() {
   }
   header = "";
   
+  // Touched the end of the panel for the CW direction
+  if(digitalRead(MOTOR_STOP_CW) == HIGH) {
+    start_time = millis();
+  }
+
+  // Touched the end of the panel for the CCW direction
+  if(digitalRead(MOTOR_STOP_CCW) == HIGH) {
+    StopClean();
+    start_time = millis();
+    cooldownState = true;
+  }
+
+  // Waits for 2 seconds before moving in CCW direction
   if (wipeState) {
+    if(millis() >= (start_time + 2000)) {
+      WiperMoveCCW();
+    }
+  }
+
+  // Waits for cooldown time to end before allowing for another clean
+  if (cooldownState) {
+    if(millis() >= (start_time + cooldown_time)) {
+      cooldownState = false;
+      wipeState = false;
+    }
+  }
+
+  /*if (wipeState) {
     Clean();
     wipeState = false;
-  }
+  }*/
   /*if (digitalRead(MOTOR_STOP) == HIGH) {
     Serial.print("I have stopped! Yay");
   }*/
