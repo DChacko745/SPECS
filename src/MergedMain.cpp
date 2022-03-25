@@ -15,10 +15,9 @@ WiFiServer server(80); // Set web server port number to 80
 //Variables:
 bool connectedToApp = false;
 bool wipeState = false; // Auxiliar variables to store the current output state
+bool wipeStart = false;
 
 int wait_time = 7; // time between cleanings
-int operation_time = 5; // time for a sweep in one direction
-int cooldown_time = 5; // minimum time for system to cooldown before next operation
 
 float temperature_threshold; // minimum value for temperature sensor to accept its input
 float humidity_threshold; // minimum value for humidity sensor to accept its input
@@ -29,19 +28,25 @@ String header; // Variable to store the HTTP request
 
 unsigned long currentTime = millis(); // Current time
 unsigned long previousTime = 0; // Previous time
+unsigned long start_time = 0;
+unsigned long operation_time = 5000; // time for a sweep in one direction
+unsigned long cooldown_time = 5000; // minimum time for system to cooldown before next operation
 
 const long timeoutTime = 2000; // Define timeout time in milliseconds (example: 2000ms = 2s)
 
-void Clean() {
+// Function Headers
+
+/*void Clean() {
   //sleep(cooldown_time);
-  digitalWrite(MOTOR_PIN_1, HIGH);
+  int start_time = millis();
+  digitalWrite(MOTOR_PIN_1, HIGH); // runs motor clockwise
   sleep(operation_time); // Does this stop the operations?
-  digitalWrite(MOTOR_PIN_1, LOW);
+  digitalWrite(MOTOR_PIN_1, LOW); // stop
   sleep(2);
-  digitalWrite(MOTOR_PIN_2, HIGH);
+  digitalWrite(MOTOR_PIN_2, HIGH); // runs motor counterclockwise
   sleep(operation_time); // Does this stop the operations?
-  digitalWrite(MOTOR_PIN_2, LOW);
-}
+  digitalWrite(MOTOR_PIN_2, LOW); // stop
+}*/
 
 void ReadSensors() {
   // Has to run while system is sleeping
@@ -92,11 +97,11 @@ void handleClient(WiFiClient client) {
   previousTime = currentTime;
   Serial.println("New Client.");          // print a message out in the serial port
   String currentLine = "";                // make a String to hold incoming data from the client
-  while (client.connected() && currentTime - previousTime <= timeoutTime) {  // loop while the client's connected
+  while (client.connected() && currentTime - previousTime <= timeoutTime) {  // loop while the client's connected 
     currentTime = millis();
     if (client.available()) {             // if there's bytes to read from the client,
       char c = client.read();             // read a byte, then
-      Serial.write(c);                    // print it out the serial monitor
+      //Serial.write(c);                    // print it out the serial monitor
       header += c;
       if (c == '\n') {                    // if the byte is a newline character
         // if the current line is blank, you got two newline characters in a row.
@@ -114,7 +119,8 @@ void handleClient(WiFiClient client) {
             Serial.println("Run Cleaning");
             //Clean();
             wipeState = true;
-          } else if (header.indexOf("GET /led/off") >= 0) {
+          } 
+          else if (header.indexOf("GET /led/off") >= 0) {
             wipeState = false;
           }
           // Display the HTML web page
@@ -136,9 +142,10 @@ void handleClient(WiFiClient client) {
           // If the LEDState is off, it displays the ON button       
           if (!wipeState) {
             client.println("<p><a href=\"/led/on\"><button class=\"button\">Clean</button></a></p>");
-          } else {
+          }
+          else {
             client.println("<p><a href=\"/led/off\"><button class=\"button button2\">Cleaning</button></a></p>");
-          } 
+          }
           
           client.println("</body></html>");
           
@@ -146,7 +153,8 @@ void handleClient(WiFiClient client) {
           client.println();
           // Break out of the while loop
           break;
-        } else { // if you got a newline, then clear currentLine
+        }
+        else { // if you got a newline, then clear currentLine
           currentLine = "";
         }
       }
@@ -176,13 +184,41 @@ void loop() {
   if (client) {                             // If a new client connects,
     handleClient(client);
     client.stop();       //temp: to prevent infinite loop 
+    Serial.println("Client Disconnected");
   }
   header = "";
-  
   if (wipeState) {
-    Clean();
+    //Serial.println("Wipe State Triggered");
+    // Set Button to grey
+    start_time = millis();
     wipeState = false;
+    wipeStart = true;
   }
+
+  if (wipeStart) {
+    if (millis()>=(start_time+operation_time+operation_time+2000)){
+      digitalWrite(MOTOR_PIN_2, LOW); // stop
+      wipeStart=false;
+      //Serial.println("Done Cleaning");
+      // Update Button back to green
+    }
+    else if(millis()>=(start_time+operation_time+2000)){
+      //Serial.println("Go Back");
+      digitalWrite(MOTOR_PIN_2, HIGH); // runs motor counterclockwise
+    }
+    else if(millis()>=(start_time+operation_time)){
+      //Serial.println("Stop Going Forward");
+      digitalWrite(MOTOR_PIN_1, LOW); // stop
+    }
+    else {
+      //Serial.println("Starting Clean Cycle: Go Forward");
+      digitalWrite(MOTOR_PIN_1, HIGH); // runs motor clockwise
+    }
+    //Clean();
+    //wipeState = false;
+  }
+  //Serial.println("Testing Testing");
+
   /*if (digitalRead(MOTOR_STOP) == HIGH) {
     Serial.print("I have stopped! Yay");
   }*/
