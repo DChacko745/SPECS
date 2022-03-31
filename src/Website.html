@@ -1,0 +1,124 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>ESP Web Server</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
+  <style>
+  html {
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: center;
+  }
+  h1 {
+    font-size: 1.8rem;
+    color: white;
+  }
+  h2{
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #143642;
+  }
+  .topnav {
+    overflow: hidden;
+    background-color: #000000;
+  }
+  body {
+    margin: 0;
+  }
+  .content {
+    padding: 30px;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  .card {
+    background-color: #ffffff;;
+    box-shadow: 2px 2px 12px 1px rgba(140,140,140,.5);
+    padding-top:10px;
+    padding-bottom:20px;
+  }
+  .button {
+    padding: 15px 50px;
+    font-size: 24px;
+    text-align: center;
+    outline: none;
+    color: #fff;
+    background-color: #0f8b8d;
+    border: none;
+    border-radius: 5px;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+   }
+   .button:active {
+     background-color: #0f8b8d;
+     box-shadow: 2 2px #CDCDCD;
+     transform: translateY(2px);
+   }
+   .state {
+     font-size: 1.5rem;
+     color:#8c8c8c;
+     font-weight: bold;
+   }
+  </style>
+<title>ESP Web Server</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+</head>
+<body>
+  <div class="topnav">
+    <img src="OfficialLogo.png" 
+    style="float:left;margin:15px 15px 15px 15px;" width="128" height="78">
+    <h1 style="float:left;">SPECS Wiper System</h1>
+  </div>
+  <div class="content">
+    <div class="card">
+      <h2>Run A Cleaning</h2>
+      <img src="loading.gif" alt="Loading" id="loading" style="width:1px;height:1px;visibility:hidden;">
+      <p class="state"><button id="button" class="button"><span id="state">Go</span></button></p>
+    </div>
+  </div>
+<script>
+  var state = "Go";
+
+  window.addEventListener('load', onLoad);
+  function onLoad(event) {
+    initButton();
+  }
+  function initButton() {
+    document.getElementById('button').addEventListener('click', toggle);
+  }
+  function toggle(){
+    if (state == "Go") {
+      state = "Cleaning...";
+      document.getElementById('state').innerHTML = state;
+
+      this.style.background = '#8c8c8c';
+      // Disables button so you can't press it again
+      //this.disabled="disabled";
+
+      // Loading Gif
+      document.getElementById('loading').style.visibility='visible';
+      document.getElementById('loading').style.width='500px';
+      document.getElementById('loading').style.height='50px';
+    }
+    else{
+      state = "Go";
+      document.getElementById('state').innerHTML = state;
+
+      this.style.background = '#0f8b8d';
+      // Re enables button to press again
+      this.enabled="enabled";
+
+      // Loading Gif
+      document.getElementById('loading').style.visibility='hidden';
+      document.getElementById('loading').style.width='1px';
+      document.getElementById('loading').style.height='1px';
+    }
+  }
+</script>
+</body>
+</html>
