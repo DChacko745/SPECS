@@ -3,18 +3,24 @@
 <head>
   <title>ESP Web Server</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" href="data:,">
+  <link rel="icon" href="OfficialLogo.png">
   <style>
   html {
     font-family: Arial, Helvetica, sans-serif;
     text-align: center;
   }
   h1 {
-    font-size: 1.8rem;
-    color: white;
+    font-size: 2rem;
+    color: rgb(255, 255, 255);
+    line-height:2;
   }
   h2{
-    font-size: 1.5rem;
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #143642;
+  }
+  h3{
+    font-size: 2rem;
     font-weight: bold;
     color: #143642;
   }
@@ -22,19 +28,51 @@
     overflow: hidden;
     background-color: #000000;
   }
+  .sys-header {
+    overflow: hidden;
+  }
   body {
     margin: 0;
+    background-color: #d8d8d8;
   }
   .content {
     padding: 30px;
-    max-width: 600px;
     margin: 0 auto;
+    max-width: 600px;
+  }
+  .content2 {
+    padding: 30px;
+    margin: 0 auto;
+    max-width:1200px;
   }
   .card {
     background-color: #ffffff;;
-    box-shadow: 2px 2px 12px 1px rgba(140,140,140,.5);
+    margin: 20px 10px 10px 10px;
+    box-shadow: 2px 2px 12px 1px rgba(54, 54, 54, 0.5);
     padding-top:10px;
     padding-bottom:20px;
+    width:600px;
+  }
+  .card2 {
+    background-color: #ffffff;;
+    box-shadow: 2px 2px 12px 1px rgba(54, 54, 54, 0.5);
+    padding-top:10px;
+    padding-bottom:20px;
+  }
+  .card3 {
+    background-color: #ffffff;;
+    outline-style:hidden;
+    box-shadow: 0 1px 0 #000000 inset, 0 -1px 0 #000000 inset;
+    padding-top:10px;
+    padding-bottom:20px;
+  }
+  .sensors {
+    padding: 15px 50px;
+    font-size: 24px;
+    text-align: center;
+    outline: none;
+    color: #fff;
+    background-color: #444444;
   }
   .button {
     padding: 15px 50px;
@@ -52,6 +90,13 @@
     -ms-user-select: none;
     user-select: none;
     -webkit-tap-highlight-color: rgba(0,0,0,0);
+   }
+   .info {
+    outline-style: hidden;
+    border:none;
+    background-color: #ffffff;
+    width: "20px";
+    height: "20px";
    }
    .button:active {
      background-color: #0f8b8d;
@@ -77,12 +122,106 @@
   <div class="content">
     <div class="card">
       <h2>Run A Cleaning</h2>
-      <img src="loading.gif" alt="Loading" id="loading" style="width:1px;height:1px;visibility:hidden;">
-      <p class="state"><button id="button" class="button"><span id="state">Go</span></button></p>
+      <img src="loading.gif" alt="Loading" id="loading" style="width:0px;height:0px;visibility:hidden;">
+      <p class="state"><button id="button" class="button" value="button"><span id="state">Go</span></button></p>
+    </div>
+    <div class="card">
+      <h2>Cleaning Interval</h2>
+      <form style="display:inline-block;">
+        <select name = "Days">
+        <option value = "Days" selected>Days</option>
+        <option value = "0">0d</option>
+        <option value = "1">1d</option>
+        <option value = "2">2d</option>
+        <option value = "3">3d</option>
+        <option value = "4">4d</option>
+        <option value = "5">5d</option>
+        </select>
+      </form>
+      <form style="display:inline-block;">
+        <select name = "Hours">
+        <option value = "Hours" selected>Hours</option>
+        <option value = "0">0h</option>
+        <option value = "1">1h</option>
+        <option value = "2">2h</option>
+        <option value = "3">3h</option>
+        <option value = "4">4h</option>
+        <option value = "5">5h</option>
+        <option value = "6">6h</option>
+        <option value = "7">7h</option>
+        <option value = "8">8h</option>
+        <option value = "9">9h</option>
+        <option value = "10">10h</option>
+        <option value = "11">11h</option>
+        <option value = "12">12h</option>
+        <option value = "13">13h</option>
+        <option value = "14">14h</option>
+        <option value = "15">15h</option>
+        <option value = "16">16h</option>
+        <option value = "17">17h</option>
+        <option value = "18">18h</option>
+        <option value = "19">19h</option>
+        <option value = "20">20h</option>
+        <option value = "21">21h</option>
+        <option value = "22">22h</option>
+        <option value = "23">23h</option>
+        </select>
+      </form>
+      <form style="display:inline-block;">
+        <select name = "Minutes">
+        <option value = "Minutes" selected>Minutes</option>
+        <option value = "0">0m</option>
+        <option value = "5">5m</option>
+        <option value = "10">10m</option>
+        <option value = "15">15m</option>
+        <option value = "20">20m</option>
+        <option value = "25">25m</option>
+        <option value = "30">30m</option>
+        <option value = "35">35m</option>
+        <option value = "40">40m</option>
+        <option value = "45">45m</option>
+        <option value = "50">50m</option>
+        <option value = "55">55m</option>
+        </select>
+      </form>
+    </div>
+  </div>
+  <div class="content2">
+    <div class="card2">
+      <h3>System Data</h3>
+      <p> View the various sensor data that comes with the system.</p>
+      <div class="card3">
+        <h2 style="display:inline-block">Humidity</h2>
+        <button id="humidInfo" class="info" value="humid"><img src="info.png" width="20px" height="20px"></button>
+        <p class="humid"><button id="sensors" class="sensors"><span id="humid">[Data]</span></button></p>
+        <p id="humidDesc" style="visibility:hidden;font-size:xx-small;">This do be what a sensors reads tho</p>
+      </div>
+      <div class="card3">
+        <h2 style="display:inline-block">Rain</h2>
+        <button id="rainInfo" class="info" value="rain"><img src="info.png" width="20px" height="20px"></button>
+        <p class="rain"><button id="sensors" class="sensors"><span id="rain">[Data]</span></button></p>
+        <p id="rainDesc" style="visibility:hidden;font-size:xx-small;">This do be what a sensors reads tho</p>
+      </div>
+      <div class="card3">
+        <h2 style="display:inline-block">Temperature</h2>
+        <button id="tempInfo" class="info" value="temp"><img src="info.png" width="20px" height="20px"></button>
+        <p class="temp"><button id="sensors" class="sensors"><span id="temp">[Data]</span></button></p>
+        <p id="tempDesc" style="visibility:hidden;font-size:xx-small;">This do be what a sensors reads tho</p>
+      </div>
+      <div class="card3">
+        <h2 style="display:inline-block">Daylight</h2>
+        <button id="daylightInfo" class="info" value="daylight"><img src="info.png" width="20px" height="20px"></button>
+        <p class="daylight"><button id="sensors" class="sensors"><span id="daylight">[Data]</span></button></p>
+        <p id="daylightDesc" style="visibility:hidden;font-size:xx-small;">This do be what a sensors reads tho</p>
+      </div>
     </div>
   </div>
 <script>
   var state = "Go";
+  var humidState = false;
+  var rainState = false;
+  var tempState = false;
+  var daylightState = false;
 
   window.addEventListener('load', onLoad);
   function onLoad(event) {
@@ -90,33 +229,88 @@
   }
   function initButton() {
     document.getElementById('button').addEventListener('click', toggle);
+    document.getElementById('humidInfo').addEventListener('click', toggle);
+    document.getElementById('rainInfo').addEventListener('click', toggle);
+    document.getElementById('tempInfo').addEventListener('click', toggle);
+    document.getElementById('daylightInfo').addEventListener('click', toggle);
   }
   function toggle(){
-    if (state == "Go") {
-      state = "Cleaning...";
-      document.getElementById('state').innerHTML = state;
+    if (this.value == 'button') {
+      if (state == "Go") {
+        state = "Cleaning...";
+        document.getElementById('state').innerHTML = state;
 
-      this.style.background = '#8c8c8c';
-      // Disables button so you can't press it again
-      //this.disabled="disabled";
+        this.style.background = '#8c8c8c';
+        // Disables button so you can't press it again
+        //this.disabled="disabled";
 
-      // Loading Gif
-      document.getElementById('loading').style.visibility='visible';
-      document.getElementById('loading').style.width='500px';
-      document.getElementById('loading').style.height='50px';
+        // Loading Gif
+        document.getElementById('loading').style.visibility = 'visible';
+        document.getElementById('loading').style.width = '500px';
+        document.getElementById('loading').style.height = '50px';
+      }
+      else {
+        state = "Go";
+        document.getElementById('state').innerHTML = state;
+
+        this.style.background = '#0f8b8d';
+        // Re enables button to press again
+        this.enabled = "enabled";
+
+        // Loading Gif
+        document.getElementById('loading').style.visibility = 'hidden';
+        document.getElementById('loading').style.width = '0px';
+        document.getElementById('loading').style.height = '0px';
+      }
     }
-    else{
-      state = "Go";
-      document.getElementById('state').innerHTML = state;
+    else if (this.value == 'humid') {
+      if (!humidState) {
+          humidState = true;
+          document.getElementById('humidDesc').style.visibility = 'visible';
+          document.getElementById('humidDesc').style.fontSize = 'medium';
+      }
+      else {
+        humidState = false;
+        document.getElementById('humidDesc').style.visibility = 'hidden';
+        document.getElementById('humidDesc').style.fontSize = 'xx-small';
+      }
+    }
+    else if (this.value == 'rain') {
+      if (!rainState) {
+          rainState = true;
+          document.getElementById('rainDesc').style.visibility = 'visible';
+          document.getElementById('rainDesc').style.fontSize = 'medium';
+      }
+      else {
+        rainState = false;
+        document.getElementById('rainDesc').style.visibility = 'hidden';
+        document.getElementById('rainDesc').style.fontSize = 'xx-small';
+      }
+    }
+    else if (this.value == 'temp') {
+      if (!tempState) {
+          tempState = true;
+          document.getElementById('tempDesc').style.visibility = 'visible';
+          document.getElementById('tempDesc').style.fontSize = 'medium';
+      }
+      else {
+        tempState = false;
+        document.getElementById('tempDesc').style.visibility = 'hidden';
+        document.getElementById('tempDesc').style.fontSize = 'xx-small';
+      }
+    }
+    else if (this.value == 'daylight') {
+      if (!daylightState) {
+          daylightState = true;
+          document.getElementById('daylightDesc').style.visibility = 'visible';
+          document.getElementById('daylightDesc').style.fontSize = 'medium';
 
-      this.style.background = '#0f8b8d';
-      // Re enables button to press again
-      this.enabled="enabled";
-
-      // Loading Gif
-      document.getElementById('loading').style.visibility='hidden';
-      document.getElementById('loading').style.width='1px';
-      document.getElementById('loading').style.height='1px';
+      }
+      else {
+        daylightState = false;
+        document.getElementById('daylightDesc').style.visibility = 'hidden';
+        document.getElementById('daylightDesc').style.fontSize = 'xx-small';
+      }
     }
   }
 </script>
