@@ -4,7 +4,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>SPECS Web App</title>
+    <title>SPECS Wiper System</title>
+    <link rel="icon" href="scripts/src/OfficialLogo.png">
 
     <!-- update the version number as needed -->
     <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-app.js"></script>
@@ -33,7 +34,7 @@
 
     </script>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-    <link rel="icon" type="image/png" href="OfficialLogo.png">
+    <link rel="icon" type="image/png" href="scripts/src/OfficialLogo.png">
     <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 
@@ -66,26 +67,138 @@
   </form>
 
   <!--CONTENT (SENSOR READINGS)-->
-  <div class="content-sign-in" id="content-sign-in" style="display: block;">
-    <div class="cards">
-      <!--TEMPERATURE-->
+  <div class="content-sign-in" id="content-sign-in" style="display:none;">
+    <div class="topnav">
+      <img src="scripts/src/OfficialLogo.png" style="float:left;margin:15px 15px 15px 15px;" width="128" height="78">
+      <h1 style="float:left;">SPECS Wiper System</h1>
+    </div>
+    <div class="content">
       <div class="card">
-        <p><i class="fas fa-thermometer-half" style="color:#059e8a;"></i> TEMPERATURE</p>
-        <p><span class="reading"><span id="temp"></span> &deg;C</span></p>
+        <h2>Run A Cleaning</h2>
+        <img src="scripts/src/loading.gif" alt="Loading" id="loading" style="width:0px;height:0px;visibility:hidden;">
+        <p><button id="button" class="button" value="button"><span id="state">Go</button></p>
       </div>
-      <!--HUMIDITY-->
-      <div class="card">
-        <p><i class="fas fa-tint" style="color:#00add6;"></i> HUMIDITY</p>
-        <p><span class="reading"><span id="hum"></span> &percnt;</span></p>
+        <div class="card">
+          <h2>Auto-Clean with Rain</h2>
+          <p>System will run when it is raining</p>
+          <button id="rainToggle" class="info" value="rainToggle"><img id="rainToggleImg" src="scripts/src/toggleOff.png" width="100px" height="auto"></button>
+          <p><span id="rainTog">Off</span></p>
       </div>
-      <!--PRESSURE-->
-      <div class="card">
-        <p><i class="fas fa-angle-double-down" style="color:#e1e437;"></i> PRESSURE</p>
-        <p><span class="reading"><span id="pres"></span> hPa</span></p>
+    </div>
+    <div class="card">
+      <h2>Cleaning Interval</h2>
+      <form style="display:inline-block;">
+        <select name = "Days" id = "Days">
+        <option value = "Days" selected>Days</option>
+        <option value = "0">0 Days</option>
+        <option value = "1">1 Day</option>
+        <option value = "2">2 Days</option>
+        <option value = "3">3 Days</option>
+        <option value = "4">4 Days</option>
+        <option value = "5">5 Days</option>
+        </select>
+      </form>
+      <form style="display:inline-block;">
+        <select name = "Hours" id = "Hours">
+        <option value = "Hours" selected>Hours</option>
+        <option value = "0">0 Hours</option>
+        <option value = "1">1 Hour</option>
+        <option value = "2">2 Hours</option>
+        <option value = "3">3 Hours</option>
+        <option value = "4">4 Hours</option>
+        <option value = "5">5 Hours</option>
+        <option value = "6">6 Hours</option>
+        <option value = "7">7 Hours</option>
+        <option value = "8">8 Hours</option>
+        <option value = "9">9 Hours</option>
+        <option value = "10">10 Hours</option>
+        <option value = "11">11 Hours</option>
+        <option value = "12">12 Hours</option>
+        <option value = "13">13 Hours</option>
+        <option value = "14">14 Hours</option>
+        <option value = "15">15 Hours</option>
+        <option value = "16">16 Hours</option>
+        <option value = "17">17 Hours</option>
+        <option value = "18">18 Hours</option>
+        <option value = "19">19 Hours</option>
+        <option value = "20">20 Hours</option>
+        <option value = "21">21 Hours</option>
+        <option value = "22">22 Hours</option>
+        <option value = "23">23 Hours</option>
+        </select>
+      </form>
+      <form style="display:inline-block;">
+        <select name = "Minutes" id = "Minutes">
+        <option value = "Minutes" selected>Minutes</option>
+        <option value = "0">0 Minutes</option>
+        <option value = "5">5 Minutes</option>
+        <option value = "10">10 Minutes</option>
+        <option value = "15">15 Minutes</option>
+        <option value = "20">20 Minutes</option>
+        <option value = "25">25 Minutes</option>
+        <option value = "30">30 Minutes</option>
+        <option value = "35">35 Minutes</option>
+        <option value = "40">40 Minutes</option>
+        <option value = "40">45 Minutes</option>
+        <option value = "50">50 Minutes</option>
+        <option value = "55">55 Minutes</option>
+        </select>
+      </form>
+      <button id="intervalSet" class="okButton" value="interval">Ok</button>
+      <h4><u>Last Cleaning Occured:</u></h4>
+      <h4><span id="lastCleaning">XX / XX / XXXX at XX : XX</span></h4>
+      <h4><u>Next Cleaning Will Be:</u></h4>
+      <h4><span id="nextCleaning">XX / XX / XXXX at XX : XX</span></h4>
+    </div>
+    <div class="content2">
+      <div class="card2">
+        <img src="scripts/src/refresh.png" width="50px" height="auto" style="float:left;padding:12px 12px 12px 12px;visibility:hidden;">
+        <h3 style="display:inline-block;">System Data</h3>
+        <button id="refresh" class="info" value="refresh" style="float:right;padding:12px 12px 12px 12px;"><img src="scripts/src/refresh.png" width="50px" height="50px"></button>
+        <p> View information from sensors connected to the system.</p>
+        <p> Last Updated: </p>
+        <p><span id="refreshTime">XX/XX/XXXX at XX:XX</span></p>
+        <div class="card3">
+          <h2 style="display:inline-block">Power Stored</h2>
+          <button id="powerStoredInfo" class="info" value="powerStored"><img src="scripts/src/info.png" width="20px" height="20px"></button>
+          <p class="powerStored"><button id="sensors" class="sensors"><span id="powerStored">[Data]</span></button></p>
+          <p id="powerStoredDesc" style="visibility:hidden;font-size:xx-small;">What is power stored</p>
+        </div>
+        <div class="card3">
+          <h2 style="display:inline-block">Power Output</h2>
+          <button id="powerOutputInfo" class="info" value="powerOutput"><img src="scripts/src/info.png" width="20px" height="20px"></button>
+          <p class="powerOutput"><button id="sensors" class="sensors"><span id="powerOutput">[Data]</span></button></p>
+          <p id="powerOutputDesc" style="visibility:hidden;font-size:xx-small;">What is power output</p>
+        </div>
+        <div class="card3">
+          <h2 style="display:inline-block">Humidity</h2>
+          <button id="humidInfo" class="info" value="humid"><img src="scripts/src/info.png" width="20px" height="20px"></button>
+          <p class="humid"><button id="sensors" class="sensors"><span id="humid">[Data]</span></button></p>
+          <p id="humidDesc" style="visibility:hidden;font-size:xx-small;">What is a humidity sensor</p>
+        </div>
+        <div class="card3">
+          <h2 style="display:inline-block">Rain</h2>
+          <button id="rainInfo" class="info" value="rain"><img src="scripts/src/info.png" width="20px" height="20px"></button>
+          <p class="rain"><button id="sensors" class="sensors"><span id="rain">[Data]</span></button></p>
+          <p id="rainDesc" style="visibility:hidden;font-size:xx-small;">What is a rain sensor</p>
+        </div>
+        <div class="card3">
+          <h2 style="display:inline-block">Temperature</h2>
+          <button id="tempInfo" class="info" value="temp"><img src="scripts/src/info.png" width="20px" height="20px"></button>
+          <p class="temp"><button id="sensors" class="sensors"><span id="temp">[Data]</span></button></p>
+          <p id="tempDesc" style="visibility:hidden;font-size:xx-small;">What is a temperature sensor</p>
+        </div>
+        <div class="card3">
+          <h2 style="display:inline-block">Daylight</h2>
+          <button id="daylightInfo" class="info" value="daylight"><img src="scripts/src/info.png" width="20px" height="20px"></button>
+          <p class="daylight"><button id="sensors" class="sensors"><span id="daylight">[Data]</span></button></p>
+          <p id="daylightDesc" style="visibility:hidden;font-size:xx-small;">What is a daylight sensor</p>
+        </div>
       </div>
     </div>
   </div>
     <script src="scripts/auth.js"></script>
     <script src="scripts/index.js"></script>
+    <script src="scripts/control.js"></script>
   </body>
 </html>

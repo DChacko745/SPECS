@@ -1,23 +1,3 @@
-const loginForm = document.querySelector('#login-form');
-loginForm.addEventListener('submit', (e) => {
-  e.preventDefault();
-  // get user info
-  const email = loginForm['input-email'].value;
-  const password = loginForm['input-password'].value;
-  // log the user in
-  auth.signInWithEmailAndPassword(email, password).then((cred) => {
-    // close the login modal & reset form
-    loginForm.reset();
-    console.log(email);
-  })
-  .catch((error) =>{
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    document.getElementById("error-message").innerHTML = errorMessage;
-    console.log(errorMessage);
-  });
-});
-
 const loginElement = document.querySelector('#login-form');
 const contentElement = document.querySelector("#content-sign-in");
 const userDetailsElement = document.querySelector('#user-details');
