@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>SPECS Wiper System</title>
-    <link rel="icon" href="scripts/src/OfficialLogo.png">
+    <link rel="icon" href="scripts/images/OfficialLogo.png">
 
     <!-- update the version number as needed -->
     <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-app.js"></script>
@@ -34,7 +34,7 @@
 
     </script>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-    <link rel="icon" type="image/png" href="scripts/src/OfficialLogo.png">
+    <link rel="icon" type="image/png" href="scripts/images/OfficialLogo.png">
     <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 
@@ -69,19 +69,19 @@
   <!--CONTENT (SENSOR READINGS)-->
   <div class="content-sign-in" id="content-sign-in" style="display:none;">
     <div class="topnav">
-      <img src="scripts/src/OfficialLogo.png" style="float:left;margin:15px 15px 15px 15px;" width="128" height="78">
+      <img src="scripts/images/OfficialLogo.png" style="float:left;margin:15px 15px 15px 15px;" width="128" height="78">
       <h1 style="float:left;">SPECS Wiper System</h1>
     </div>
     <div class="content">
       <div class="card">
         <h2>Run A Cleaning</h2>
-        <img src="scripts/src/loading.gif" alt="Loading" id="loading" style="width:0px;height:0px;visibility:hidden;">
+        <img src="scripts/images/loading.gif" alt="Loading" id="loading" style="width:0px;height:0px;visibility:hidden;">
         <p><button id="button" class="button" value="button"><span id="state">Go</button></p>
       </div>
         <div class="card">
           <h2>Auto-Clean with Rain</h2>
           <p>System will run when it is raining</p>
-          <button id="rainToggle" class="info" value="rainToggle"><img id="rainToggleImg" src="scripts/src/toggleOff.png" width="100px" height="auto"></button>
+          <button id="rainToggle" class="info" value="rainToggle"><img id="rainToggleImg" src="scripts/images/toggleOff.png" width="100px" height="auto"></button>
           <p><span id="rainTog">Off</span></p>
       </div>
     </div>
@@ -152,45 +152,45 @@
     </div>
     <div class="content2">
       <div class="card2">
-        <img src="scripts/src/refresh.png" width="50px" height="auto" style="float:left;padding:12px 12px 12px 12px;visibility:hidden;">
+        <img src="scripts/images/refresh.png" width="50px" height="auto" style="float:left;padding:12px 12px 12px 12px;visibility:hidden;">
         <h3 style="display:inline-block;">System Data</h3>
-        <button id="refresh" class="info" value="refresh" style="float:right;padding:12px 12px 12px 12px;"><img src="scripts/src/refresh.png" width="50px" height="50px"></button>
+        <button id="refresh" class="info" value="refresh" style="float:right;padding:12px 12px 12px 12px;"><img src="scripts/images/refresh.png" width="50px" height="50px"></button>
         <p> View information from sensors connected to the system.</p>
         <p> Last Updated: </p>
         <p><span id="refreshTime">XX/XX/XXXX at XX:XX</span></p>
         <div class="card3">
           <h2 style="display:inline-block">Power Stored</h2>
-          <button id="powerStoredInfo" class="info" value="powerStored"><img src="scripts/src/info.png" width="20px" height="20px"></button>
+          <button id="powerStoredInfo" class="info" value="powerStored"><img src="scripts/images/info.png" width="20px" height="20px"></button>
           <p class="powerStored"><button id="sensors" class="sensors"><span id="powerStored">[Data]</span></button></p>
           <p id="powerStoredDesc" style="visibility:hidden;font-size:xx-small;">What is power stored</p>
         </div>
         <div class="card3">
           <h2 style="display:inline-block">Power Output</h2>
-          <button id="powerOutputInfo" class="info" value="powerOutput"><img src="scripts/src/info.png" width="20px" height="20px"></button>
+          <button id="powerOutputInfo" class="info" value="powerOutput"><img src="scripts/images/info.png" width="20px" height="20px"></button>
           <p class="powerOutput"><button id="sensors" class="sensors"><span id="powerOutput">[Data]</span></button></p>
           <p id="powerOutputDesc" style="visibility:hidden;font-size:xx-small;">What is power output</p>
         </div>
         <div class="card3">
           <h2 style="display:inline-block">Humidity</h2>
-          <button id="humidInfo" class="info" value="humid"><img src="scripts/src/info.png" width="20px" height="20px"></button>
+          <button id="humidInfo" class="info" value="humid"><img src="scripts/images/info.png" width="20px" height="20px"></button>
           <p class="humid"><button id="sensors" class="sensors"><span id="humid">[Data]</span></button></p>
           <p id="humidDesc" style="visibility:hidden;font-size:xx-small;">What is a humidity sensor</p>
         </div>
         <div class="card3">
           <h2 style="display:inline-block">Rain</h2>
-          <button id="rainInfo" class="info" value="rain"><img src="scripts/src/info.png" width="20px" height="20px"></button>
+          <button id="rainInfo" class="info" value="rain"><img src="scripts/images/info.png" width="20px" height="20px"></button>
           <p class="rain"><button id="sensors" class="sensors"><span id="rain">[Data]</span></button></p>
           <p id="rainDesc" style="visibility:hidden;font-size:xx-small;">What is a rain sensor</p>
         </div>
         <div class="card3">
           <h2 style="display:inline-block">Temperature</h2>
-          <button id="tempInfo" class="info" value="temp"><img src="scripts/src/info.png" width="20px" height="20px"></button>
+          <button id="tempInfo" class="info" value="temp"><img src="scripts/images/info.png" width="20px" height="20px"></button>
           <p class="temp"><button id="sensors" class="sensors"><span id="temp">[Data]</span></button></p>
           <p id="tempDesc" style="visibility:hidden;font-size:xx-small;">What is a temperature sensor</p>
         </div>
         <div class="card3">
           <h2 style="display:inline-block">Daylight</h2>
-          <button id="daylightInfo" class="info" value="daylight"><img src="scripts/src/info.png" width="20px" height="20px"></button>
+          <button id="daylightInfo" class="info" value="daylight"><img src="scripts/images/info.png" width="20px" height="20px"></button>
           <p class="daylight"><button id="sensors" class="sensors"><span id="daylight">[Data]</span></button></p>
           <p id="daylightDesc" style="visibility:hidden;font-size:xx-small;">What is a daylight sensor</p>
         </div>
