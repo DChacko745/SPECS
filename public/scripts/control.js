@@ -75,7 +75,7 @@ var state = "Go";
     }
     else if (this.value == 'powerOutput') {
       if (!powerOutputState) {
-        powerStoredState = true;
+        powerOutputState = true;
           document.getElementById('powerOutputDesc').style.visibility = 'visible';
           document.getElementById('powerOutputDesc').style.fontSize = 'medium';
       }
@@ -168,7 +168,7 @@ var state = "Go";
 
 
         rainToggleState = true;
-        document.getElementById('rainToggleImg').src = 'src/toggleOn.png';
+        document.getElementById('rainToggleImg').src = 'scripts/src/toggleOn.png';
         document.getElementById('rainTog').innerHTML = 'On';
       }
       else {
@@ -176,7 +176,7 @@ var state = "Go";
 
 
         rainToggleState = false;
-        document.getElementById('rainToggleImg').src = 'src/toggleOff.png';
+        document.getElementById('rainToggleImg').src = 'scripts/src/toggleOff.png';
         document.getElementById('rainTog').innerHTML = 'Off';
       }
     }
