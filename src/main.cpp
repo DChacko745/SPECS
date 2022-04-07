@@ -1,253 +1,195 @@
 #include <Arduino.h>
 #include <WiFi.h>
+#include <Firebase_ESP_Client.h>
+#include <Wire.h>
 #include <Adafruit_Sensor.h>
 #include <DHT.h>
-
-//ESP Pin Definitions:
-#define MOTOR_PIN_1 25
-#define MOTOR_PIN_2 26
+#include <time.h>
 
 #define HT_SENSOR_PIN 27
 #define DHTTYPE DHT11
 DHT dht(HT_SENSOR_PIN, DHTTYPE);
 
 #define DAYLIGHT_SENSOR_PIN 14
-#define MOTOR_STOP 9
 
-//Network Credentials:
-const char* ssid = "iPhone";
-const char* password = "esp32Connection";
+// Provide the token generation process info.
+#include "addons/TokenHelper.h"
+// Provide the RTDB payload printing info and other helper functions.
+#include "addons/RTDBHelper.h"
 
-WiFiServer server(80); // Set web server port number to 80
+// Insert your network credentials
+#define WIFI_SSID "iPhone"
+#define WIFI_PASSWORD "esp32Connection"
 
-//Variables:
-bool connectedToApp = false;
-bool wipeState = false; // Auxiliar variables to store the current output state
-bool wipeStart = false;
+// Insert Firebase project API Key
+#define API_KEY "AIzaSyBtqq67zxXc9Az7AqhEWNbtQd2zyr8PyvY"
 
-int wait_time = 7; // time between cleanings
+// Insert Authorized Email and Corresponding Password
+#define USER_EMAIL "dchacko1@pride.hofstra.edu"
+#define USER_PASSWORD "test12"
+
+// Insert RTDB URLefine the RTDB URL
+#define DATABASE_URL "https://specs-ef726-default-rtdb.firebaseio.com/"
+
+// Define Firebase objects
+FirebaseData fbdo;
+FirebaseAuth auth;
+FirebaseConfig config;
+
+// Variable to save USER UID
+String uid;
+
+// Variables to save database paths
+String databasePath;
+String tempPath;
+String humPath;
+String dayPath;
+
+// DHT11 sensor
+float temperature;
+float humidity;
+float daylight;
+float rain;
 
 float temperature_threshold; // minimum value for temperature sensor to accept its input (in Fahrenheit)
 float humidity_threshold; // minimum value for humidity sensor to accept its input (20-80%)
 float rain_threshold; // minimum value for rain sensor to accept its input
 float daylight_threshold; // minimum value for daylight sensor to accept its input (0-4096)
 
-String header; // Variable to store the HTTP request
+float operation_time = 5000; // time for a sweep in one direction
+float cooldown_time = 5000; // minimum time for system to cooldown before next operation
 
-unsigned long currentTime = millis(); // Current time
-unsigned long previousTime = 0; // Previous time
-unsigned long start_time = 0;
-unsigned long operation_time = 5000; // time for a sweep in one direction
-unsigned long cooldown_time = 5000; // minimum time for system to cooldown before next operation
+// Timer variables (send new readings every three minutes)
+unsigned long sendDataPrevMillis = 0;
+unsigned long timerDelay = 10000;
 
-const long timeoutTime = 2000; // Define timeout time in milliseconds (example: 2000ms = 2s)
+// Initialize WiFi
+void initWiFi() {
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  Serial.print("Connecting to WiFi ..");
+  while (WiFi.status() != WL_CONNECTED) {
+    Serial.print('.');
+    delay(1000);
+  }
+  Serial.println(WiFi.localIP());
+  Serial.println();
+}
 
-// Function Headers
-
-/*void Clean() {
-  //sleep(cooldown_time);
-  int start_time = millis();
-  digitalWrite(MOTOR_PIN_1, HIGH); // runs motor clockwise
-  sleep(operation_time); // Does this stop the operations?
-  digitalWrite(MOTOR_PIN_1, LOW); // stop
-  sleep(2);
-  digitalWrite(MOTOR_PIN_2, HIGH); // runs motor counterclockwise
-  sleep(operation_time); // Does this stop the operations?
-  digitalWrite(MOTOR_PIN_2, LOW); // stop
-}*/
+// Write float values to the database
+void sendFloat(String path, float value){
+  if (Firebase.RTDB.setFloat(&fbdo, path.c_str(), value)){
+    Serial.print("Writing value: ");
+    Serial.print (value);
+    Serial.print(" on the following path: ");
+    Serial.println(path);
+    Serial.println("PASSED");
+    Serial.println("PATH: " + fbdo.dataPath());
+    Serial.println("TYPE: " + fbdo.dataType());
+  }
+  else {
+    Serial.println("FAILED");
+    Serial.println("REASON: " + fbdo.errorReason());
+  }
+}
 
 void ReadSensors() {
-  // Has to run while system is sleeping
-
-  float h = dht.readHumidity();
-  float t = dht.readTemperature(true); // in Fahrenheit
+  humidity = dht.readHumidity();
+  temperature = dht.readTemperature(true); // in Fahrenheit
 
   Serial.println("Humidity:");
-  Serial.println(h, 5);
+  Serial.println(humidity, 5);
   Serial.println("Temperature:");
-  Serial.println(t, 5);
+  Serial.println(temperature, 5);
 
-  int lightValue = analogRead(DAYLIGHT_SENSOR_PIN);
+  daylight = analogRead(DAYLIGHT_SENSOR_PIN);
   Serial.println("Daylight Value:");
-  Serial.println(lightValue);
-
-  // Listens to sensors and calls Clean() if necessary
-
-  /* if ((temperatureInput >= temperature_threshold) &&
-        (humidityInput >= humidity_threshold) &&
-        (rainInput >= rain_threshold) &&
-        (daylightInput >= daylight_threshold)) {
-      Clean();
-    }
-  */
+  Serial.println(daylight);
 }
 
-void UpdateSettings() {
-  // Check if any changes to variables came from app
+void Clean() {
+
 }
 
-void Connect() {
-  // Connects to App
-}
+void setup(){
+  Serial.begin(115200);
 
-void Disconnect() {
-  // Disconnect from App
-}
+  // Initialize BME280 sensor
+  initWiFi();
 
-void CheckAppConnection() {
-  // Connect to Wi-Fi network with SSID and password
-  Serial.print("Connecting to ");
-  Serial.println(ssid);
-  WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
+  // Assign the api key (required)
+  config.api_key = API_KEY;
+
+  // Assign the user sign in credentials
+  auth.user.email = USER_EMAIL;
+  auth.user.password = USER_PASSWORD;
+
+  // Assign the RTDB URL (required)
+  config.database_url = DATABASE_URL;
+
+  Firebase.reconnectWiFi(true);
+  fbdo.setResponseSize(4096);
+
+  // Assign the callback function for the long running token generation task */
+  config.token_status_callback = tokenStatusCallback; //see addons/TokenHelper.h
+
+  // Assign the maximum retry of token generation
+  config.max_token_generation_retry = 5;
+
+  // Initialize the library with the Firebase authen and config
+  Firebase.begin(&config, &auth);
+
+  // Getting the user UID might take a few seconds
+  Serial.println("Getting User UID");
+  while ((auth.token.uid) == "") {
+    Serial.print('.');
+    delay(1000);
   }
-  // Print local IP address and start web server
-  Serial.println("");
-  Serial.println("WiFi connected.");
-  Serial.println("IP address: ");
-  Serial.println(WiFi.localIP());
-  server.begin();
-}
+  // Print user UID
+  uid = auth.token.uid.c_str();
+  Serial.print("User UID: ");
+  Serial.println(uid);
 
-//handle incoming clients
-void handleClient(WiFiClient client) {
-  currentTime = millis();
-  previousTime = currentTime;
-  Serial.println("New Client.");          // print a message out in the serial port
-  String currentLine = "";                // make a String to hold incoming data from the client
-  while (client.connected() && currentTime - previousTime <= timeoutTime) {  // loop while the client's connected 
-    currentTime = millis();
-    if (client.available()) {             // if there's bytes to read from the client,
-      char c = client.read();             // read a byte, then
-      //Serial.write(c);                    // print it out the serial monitor
-      header += c;
-      if (c == '\n') {                    // if the byte is a newline character
-        // if the current line is blank, you got two newline characters in a row.
-        // that's the end of the client HTTP request, so send a response:
-        if (currentLine.length() == 0) {
-          // HTTP headers always start with a response code (e.g. HTTP/1.1 200 OK)
-          // and a content-type so the client knows what's coming, then a blank line:
-          client.println("HTTP/1.1 200 OK");
-          client.println("Content-type:text/html");
-          client.println("Connection: close");
-          client.println();
-          
-          // turns the GPIOs on and off
-          if (header.indexOf("GET /led/on") >= 0) {
-            Serial.println("Run Cleaning");
-            //Clean();
-            wipeState = true;
-          } 
-          else if (header.indexOf("GET /led/off") >= 0) {
-            wipeState = false;
-          }
-          // Display the HTML web page
-          client.println("<!DOCTYPE html><html>");
-          client.println("<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">");
-          client.println("<link rel=\"icon\" href=\"data:,\">");
-          // CSS to style the on/off buttons 
-          // Feel free to change the background-color and font-size attributes to fit your preferences
-          client.println("<style>html { font-family: Helvetica; display: inline-block; margin: 0px auto; text-align: center;}");
-          client.println(".button { background-color: #4CAF50; border: none; color: white; padding: 16px 40px;");
-          client.println("text-decoration: none; font-size: 30px; margin: 2px; cursor: pointer;}");
-          client.println(".button2 {background-color: #555555;}</style></head>");
-          
-          // Web Page Heading
-          client.println("<body><h1>SPECS Wiper System</h1>");
-          
-          // Display current state, and ON/OFF buttons for GPIO led  
-          client.println("<p>Run a Cleaning</p>");
-          // If the LEDState is off, it displays the ON button       
-          if (!wipeState) {
-            client.println("<p><a href=\"/led/on\"><button class=\"button\">Clean</button></a></p>");
-          }
-          else {
-            client.println("<p><a href=\"/led/off\"><button class=\"button button2\">Cleaning</button></a></p>");
-          }
-          
-          client.println("</body></html>");
-          
-          // The HTTP response ends with another blank line
-          client.println();
-          // Break out of the while loop
-          break;
-        }
-        else { // if you got a newline, then clear currentLine
-          currentLine = "";
-        }
-      }
-      else if (c != '\r') {  // if you got anything else but a carriage return character,
-        currentLine += c;      // add it to the end of the currentLine
-      }
-    }
-  }
-}
+  // Update database path
+  //databasePath = "/UsersData/" + uid;
+  databasePath = "/Users/test/device1/sensorData";
 
-void setup() {
-  // Set pinModes
-  pinMode(MOTOR_PIN_1, OUTPUT);
-  pinMode(MOTOR_PIN_2, OUTPUT); 
-  pinMode(MOTOR_STOP, INPUT_PULLUP);
-  digitalWrite(MOTOR_PIN_1, LOW);
-  digitalWrite(MOTOR_PIN_2, LOW);
+  // Update database path for sensor readings
+  tempPath = databasePath + "/temperature"; // --> UsersData/<user_uid>/temperature
+  humPath = databasePath + "/humidity"; // --> UsersData/<user_uid>/humidity
+  dayPath = databasePath + "/daylight"; // --> UsersData/<user_uid>/pressure
 
   dht.begin();
-
-  Serial.begin(115200);
-  //CheckAppConnection();
 }
 
-void loop() {
-  //always check for clients trying to connect to our server 
-  WiFiClient client = server.available();
+void loop(){
+  // Send new readings to database
+  if (Firebase.ready() && (millis() - sendDataPrevMillis > timerDelay || sendDataPrevMillis == 0)){
+    sendDataPrevMillis = millis();
+ 
+    // Get latest sensor readings
+    ReadSensors();
 
-  if (client) {                             // If a new client connects,
-    handleClient(client);
-    client.stop();       //temp: to prevent infinite loop 
-    Serial.println("Client Disconnected");
+    // Send readings to database:
+    sendFloat(tempPath, temperature);
+    sendFloat(humPath, humidity);
+    sendFloat(dayPath, daylight);
   }
-  header = "";
-  if (wipeState) {
-    //Serial.println("Wipe State Triggered");
-    // Set Button to grey
-    start_time = millis();
-    wipeState = false;
-    wipeStart = true;
-  }
-
-  if (wipeStart) {
-    if (millis()>=(start_time+operation_time+operation_time+2000)){
-      digitalWrite(MOTOR_PIN_2, LOW); // stop
-      wipeStart=false;
-      //Serial.println("Done Cleaning");
-      // Update Button back to green
-    }
-    else if(millis()>=(start_time+operation_time+2000)){
-      //Serial.println("Go Back");
-      digitalWrite(MOTOR_PIN_2, HIGH); // runs motor counterclockwise
-    }
-    else if(millis()>=(start_time+operation_time)){
-      //Serial.println("Stop Going Forward");
-      digitalWrite(MOTOR_PIN_1, LOW); // stop
-    }
-    else {
-      //Serial.println("Starting Clean Cycle: Go Forward");
-      digitalWrite(MOTOR_PIN_1, HIGH); // runs motor clockwise
-    }
-    //Clean();
-    //wipeState = false;
-  }
-  //Serial.println("Testing Testing");
-
-  /*if (digitalRead(MOTOR_STOP) == HIGH) {
-    Serial.print("I have stopped! Yay");
-  }*/
-  //if (connectedToApp)
-     //UpdateSettings();
-
-  //Clean();
-
-  //sleep(wait_time - cooldown_time);
 }
+
+/**
+ * ConnectToFirebase()
+ * Clean()
+ * ReadSensors()
+ * Analyze
+ * CheckSystemSettings()
+ * Listeners on all systemSettings booleans in Firebase Database
+ * 
+ * Clean()
+ * Motor CW
+ * while (circuit is not completed) {
+ * }
+ * Motor CCW
+ * while (circuit is not completed) {
+ * }
+ * isCleaning = false for the firebase database
+ */
