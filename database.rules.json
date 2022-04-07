@@ -2,17 +2,9 @@
   /* Visit https://firebase.google.com/docs/database/security to learn more about security rules. */
   "rules": {
     "Users" : {
-      "$uid" : {
-        "device1"  : {
-          "sensorData" : {
-            ".read": true,
-            ".write": true
-          },
-          "systemSettings" : {
-            ".read": true,
-            ".write": true
-          }
-        }
+      "test" : {
+        ".read": true,
+        ".write": true
       }
     }
   }
