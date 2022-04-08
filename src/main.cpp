@@ -9,10 +9,13 @@
 //ESP Pin Definitions:
 #define MOTOR_PIN_1 25
 #define MOTOR_PIN_2 26
-#define MOTOR_STOP_1 32
-#define MOTOR_STOP_2 33
+#define MOTOR_STOP_1 13
+#define MOTOR_STOP_2 35
 
+#define BATTERY_VOLTAGE_SENSOR_PIN 33
+#define SYSTEM_CURRENT_SENSOR_PIN 32
 #define DAYLIGHT_SENSOR_PIN 14
+#define RAIN_SENSOR_PIN 34
 #define HT_SENSOR_PIN 27
 #define DHTTYPE DHT11
 DHT dht(HT_SENSOR_PIN, DHTTYPE);
@@ -22,9 +25,10 @@ DHT dht(HT_SENSOR_PIN, DHTTYPE);
 // Provide the RTDB payload printing info and other helper functions.
 #include "addons/RTDBHelper.h"
 
-const char* ntpServer = "pool.ntp.org";
+/*const char* ntpServer = "pool.ntp.org";
 const long  gmtOffset_sec = -240;
 const int   daylightOffset_sec = 3600;
+*/
 
 // Insert your network credentials
 #define WIFI_SSID "iPhone"
@@ -56,6 +60,7 @@ String dayPath;
 String rainPath;
 String powerGenPath;
 String powerStoPath;
+String batVoltPath;
 
 String cleaningIntervalPath;
 String isUserConPath;
@@ -77,7 +82,8 @@ int cleaningInterval = 300000;
 float temperature;
 float humidity;
 float daylight;
-float rain;
+int rain;
+float battery_voltage;
 
 float temperature_threshold; // minimum value for temperature sensor to accept its input (in Fahrenheit)
 float humidity_threshold; // minimum value for humidity sensor to accept its input (20-80%)
@@ -130,6 +136,9 @@ void ReadSensors() {
   humidity = dht.readHumidity();
   temperature = dht.readTemperature(inFahrenheit);
   daylight = analogRead(DAYLIGHT_SENSOR_PIN);
+  battery_voltage = analogRead(BATTERY_VOLTAGE_SENSOR_PIN)/192.0;
+  int rainTemp = -1*analogRead(RAIN_SENSOR_PIN);
+  rain = map(rainTemp,-4096,0,0,100);
   // NEED TO ADD RAIN AND POWER SENSORS
 
   Serial.println("Humidity:");
@@ -138,6 +147,10 @@ void ReadSensors() {
   Serial.println(temperature, 5);
   Serial.println("Daylight Value:");
   Serial.println(daylight);
+  Serial.println("Battery Voltage:");
+  Serial.println(battery_voltage);
+  Serial.println("Rain:");
+  Serial.println(rain);
 }
 
 // Send new readings to database
@@ -151,9 +164,11 @@ void UpdateSensorData_FB() {
     sendFloat(tempPath, temperature);
     sendFloat(humPath, humidity);
     sendFloat(dayPath, daylight);
+    sendFloat(batVoltPath, battery_voltage);
+    sendFloat(rainPath, rain);
 
-    getLocalTime(&timeinfo);
-    Firebase.RTDB.set(&fbdo, lastCleanPath.c_str(), &timeinfo);
+    //getLocalTime(&timeinfo);
+    //Firebase.RTDB.set(&fbdo, lastCleanPath.c_str(), &timeinfo);
     Firebase.RTDB.setBool(&fbdo, isRefreshingPath.c_str(), false);
 }
 
@@ -170,8 +185,8 @@ void Clean() {
     digitalWrite(MOTOR_PIN_2, LOW); // Stop
     delay(cooldown_time);
 
-    getLocalTime(&timeinfo);
-    Firebase.RTDB.set(&fbdo, lastCleanPath.c_str(), &timeinfo);
+    //getLocalTime(&timeinfo);
+    //Firebase.RTDB.set(&fbdo, lastCleanPath.c_str(), &timeinfo);
     Firebase.RTDB.setBool(&fbdo, isCleaningPath.c_str(), false);
 }
 
@@ -184,15 +199,12 @@ void CheckSystemSettings_FB() {
   int temp_cleaningInterval;
     
   Firebase.RTDB.getBool(&fbdo, isAutoCleanOnPath, &temp_IsAutoCleanOn);
-  Serial.println(temp_IsAutoCleanOn);
   Firebase.RTDB.getBool(&fbdo, isCleaningPath, &IsCleaning);
-  Serial.println(IsCleaning);
   Firebase.RTDB.getBool(&fbdo, isRefreshingPath, &IsRefreshing);
-  Serial.println(IsRefreshing);
-  Firebase.RTDB.getBool(&fbdo, inFahrenheitPath, &temp_InFahrenheit);
+  /*Firebase.RTDB.getBool(&fbdo, inFahrenheitPath, &temp_InFahrenheit);
   Serial.println(temp_InFahrenheit);
   Firebase.RTDB.getInt(&fbdo, cleaningIntervalPath, &temp_cleaningInterval);
-  Serial.println(temp_cleaningInterval);
+  Serial.println(temp_cleaningInterval);*/
 
   if (temp_IsAutoCleanOn != isAutoCleanOn)
     isAutoCleanOn = temp_IsAutoCleanOn;
@@ -200,14 +212,15 @@ void CheckSystemSettings_FB() {
     Clean();
   if (IsRefreshing)
     UpdateSensorData_FB();
-  if (temp_InFahrenheit != inFahrenheit)
+  /*if (temp_InFahrenheit != inFahrenheit)
     inFahrenheit = temp_InFahrenheit;
   if ((temp_cleaningInterval * 1000) != cleaningInterval) {
     cleaningInterval = temp_cleaningInterval;
     cleanPrevMillis = 1; // OR NOT?
-  }
+  }*/
 }
 
+/*
 // Prints the current time
 void printLocalTime()
 {
@@ -217,6 +230,7 @@ void printLocalTime()
   }
   Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
 }
+*/
 
 void setup(){
     // Set pinModes
@@ -224,13 +238,18 @@ void setup(){
     pinMode(MOTOR_PIN_2, OUTPUT); 
     pinMode(MOTOR_STOP_1, INPUT_PULLUP);
     pinMode(MOTOR_STOP_2, INPUT_PULLUP);
+    pinMode(BATTERY_VOLTAGE_SENSOR_PIN, INPUT_PULLDOWN);
+    pinMode(SYSTEM_CURRENT_SENSOR_PIN, INPUT_PULLDOWN);
+    pinMode(DAYLIGHT_SENSOR_PIN, INPUT);
+    pinMode(HT_SENSOR_PIN, INPUT);
+    pinMode(RAIN_SENSOR_PIN, INPUT_PULLUP);
 
     Serial.begin(115200);
 
     initWiFi();
 
-    configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
-    printLocalTime();
+    //configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+    //printLocalTime();
 
     // Assign the api key (required)
     config.api_key = API_KEY;
@@ -245,7 +264,7 @@ void setup(){
     Firebase.reconnectWiFi(true);
     fbdo.setResponseSize(4096);
 
-    // Assign the callback function for the long running token generation task */
+    // Assign the callback function for the long running token generation task
     config.token_status_callback = tokenStatusCallback; //see addons/TokenHelper.h
 
     // Assign the maximum retry of token generation
@@ -275,8 +294,9 @@ void setup(){
     humPath = databasePath + "/sensorData/humidity";
     dayPath = databasePath + "/sensorData/daylight";
     rainPath = databasePath + "/sensorData/rain";
-    powerGenPath = databasePath + "/sensorData/PowerGenerated";
-    powerStoPath = databasePath + "/sensorData/PowerStored";
+    powerGenPath = databasePath + "/sensorData/powerGenerated";
+    powerStoPath = databasePath + "/sensorData/powerStored";
+    batVoltPath = databasePath + "/sensorData/batteryVoltage";
 
     isUserConPath = databasePath + "/systemData/isUserConnected";
     lastCleanPath = databasePath + "/systemData/lastClean";
@@ -288,22 +308,29 @@ void setup(){
     isRefreshingPath = databasePath + "/systemSettings/isRefreshing";
     inFahrenheitPath = databasePath + "/systemSettings/tempInFahrenheit";
 
-    dht.begin();
-
     Firebase.RTDB.setString(&fbdo, "/Users/test/Name", "SPECS Team");
     //Firebase.RTDB.setString(&fbdo, "/Users" + uid + "/Name", "SPECS Team");
 
     Firebase.RTDB.setString(&fbdo, databasePath + "/Name", "Home Wiper");
+
+    dht.begin();
 }
 
 void loop(){
   if (Firebase.ready() && (millis() - sendDataPrevMillis > sensorDatatimerDelay || sendDataPrevMillis == 0))
     UpdateSensorData_FB();
 
-  if (Firebase.ready() && (millis() - cleanPrevMillis > cleaningInterval || cleanPrevMillis == 0))
-    Clean();
-
+  /*if (Firebase.ready() && (millis() - cleanPrevMillis > cleaningInterval))
+    Clean();*/
+  
   CheckSystemSettings_FB();
+
+  //Serial.println("hello");
+  //Serial.print("Battery Voltage: ");
+  //Serial.println(analogRead(BATTERY_VOLTAGE_SENSOR_PIN)/192.0);
+  //Serial.print("System Current: ");
+  //Serial.println(analogRead(SYSTEM_CURRENT_SENSOR_PIN));
+  //Serial.println("System Power Draw: " + 5*analogRead(SYSTEM_CURRENT_SENSOR_PIN));
 }
 
 /**
