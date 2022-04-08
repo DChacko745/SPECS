@@ -3,8 +3,6 @@ var powerStoredState = false;
 var powerOutputState = false;
 var humidState = false;
 var rainState = false;
-var tempState = false;
-var daylightState = false;
 var rainToggleState = false;
 
 // Firebase
@@ -21,15 +19,11 @@ function initSensor() {
     const data = snapshot.val();
     document.getElementById('humid').innerHTML = data.toString();
   });
-  dbRef.child("Users").child("test").child("deviceMacAddress").child("sensorData").child("daylight").get().then((snapshot) => {
-    const data = snapshot.val();
-    document.getElementById('daylight').innerHTML = data.toString();
-  });
   dbRef.child("Users").child("test").child("deviceMacAddress").child("sensorData").child("powerGenerated").get().then((snapshot) => {
     const data = snapshot.val();
     document.getElementById('powerOutput').innerHTML = data.toString();
   });
-  dbRef.child("Users").child("test").child("deviceMacAddress").child("sensorData").child("powerStored").get().then((snapshot) => {
+  dbRef.child("Users").child("test").child("deviceMacAddress").child("sensorData").child("systemPowerDraw").get().then((snapshot) => {
     const data = snapshot.val();
     document.getElementById('powerStored').innerHTML = data.toString();
   });
@@ -51,46 +45,80 @@ function initButton() {
   document.getElementById('humidInfo').addEventListener('click', toggle);
   document.getElementById('rainInfo').addEventListener('click', toggle);
   document.getElementById('tempInfo').addEventListener('click', toggle);
-  document.getElementById('daylightInfo').addEventListener('click', toggle);
   document.getElementById('rainToggle').addEventListener('click', toggle);
 }
 function initExtras() {
-  // initializing anything else from database that isn't sensor data or buttons
+  // initializing anything else from database that isn't sensor data
+  dbRef.child("Users").child("test").child("deviceMacAddress").child("systemData").child("lastClean").get().then((snapshot) => {
+    const data = snapshot.val();
+    document.getElementById('lastCleaning').innerHTML = data.toString();
+  });
+  dbRef.child("Users").child("test").child("deviceMacAddress").child("systemData").child("nextClean").get().then((snapshot) => {
+    const data = snapshot.val();
+    document.getElementById('nextCleaning').innerHTML = data.toString();
+  });
+  dbRef.child("Users").child("test").child("deviceMacAddress").child("systemData").child("lastSensorRead").get().then((snapshot) => {
+    const data = snapshot.val();
+    document.getElementById('refreshTime').innerHTML = data.toString();
+  });
+  dbRef.child("Users").child("test").child("deviceMacAddress").child("systemData").child("cleaningInterval").get().then((snapshot) => {
+    const data = snapshot.val();
+    //var secs = 60*(60*((24*numDay)+numHr)+numMin);
+    var numMin = parseInt(data/60)%60;
+    var numHr = parseInt((data/60-numMin)/60)%24;
+    var numDay = parseInt(((data/60-numMin)/60-numHr)/24);
+
+    document.getElementById('Days').getElementsByTagName('option')[numMin/5+1].selected = true;
+    document.getElementById('Hours').getElementsByTagName('option')[numHr+1].selected = true;
+    document.getElementById('Minutes').getElementsByTagName('option')[numDay+1].selected = true;
+    
+  });
+  dbRef.child("Users").child("test").child("deviceMacAddress").child("systemSettings").child("isAutoCleanOn").get().then((snapshot) => {
+    const data = snapshot.val();
+    if (data == true) {
+      rainToggleState = true;
+      document.getElementById('rainToggleImg').src = 'scripts/images/toggleOn.png';
+      document.getElementById('rainTog').innerHTML = 'On';
+    }
+    else {
+      rainToggleState = false;
+      document.getElementById('rainToggleImg').src = 'scripts/images/toggleOff.png';
+      document.getElementById('rainTog').innerHTML = 'Off';
+    }
+  });
 }
 function toggle(){
   if (this.value == 'button') {
-    if (state == "Go") {
-      // Cleaning is now in progress, update firebase
+    state = "Cleaning...";
+    document.getElementById('state').innerHTML = state;
 
+    this.style.background = '#8c8c8c';
+    var id = this.id;
+    // Disables button so you can't press it again
+    this.disabled=true;
 
-      state = "Cleaning...";
-      document.getElementById('state').innerHTML = state;
+    // Loading Gif
+    document.getElementById('loading').style.visibility = 'visible';
+    document.getElementById('loading').style.width = '500px';
+    document.getElementById('loading').style.height = '50px';
 
-      this.style.background = '#8c8c8c';
-      // Disables button so you can't press it again
-      //this.disabled="disabled";
+    dbRef.child("Users").child("test").child("deviceMacAddress").child("systemSettings").update({'isCleaning':true});
 
-      // Loading Gif
-      document.getElementById('loading').style.visibility = 'visible';
-      document.getElementById('loading').style.width = '500px';
-      document.getElementById('loading').style.height = '50px';
-    }
-    else {
-      // Cleaning is over, retrieve update from firebase
+    dbRef.child("Users").child("test").child("deviceMacAddress").child("systemSettings").child("isCleaning").on('value', function(snapshot) {
+      if (snapshot.val() == false) {
+        state = "Go";
+        document.getElementById('state').innerHTML = state;
 
+        document.getElementById(id).style.background = '#0f8b8d';
+        // Re enables button to press again
+        document.getElementById(id).disabled = false;
 
-      state = "Go";
-      document.getElementById('state').innerHTML = state;
-
-      this.style.background = '#0f8b8d';
-      // Re enables button to press again
-      this.enabled = "enabled";
-
-      // Loading Gif
-      document.getElementById('loading').style.visibility = 'hidden';
-      document.getElementById('loading').style.width = '0px';
-      document.getElementById('loading').style.height = '0px';
-    }
+        // Loading Gif
+        document.getElementById('loading').style.visibility = 'hidden';
+        document.getElementById('loading').style.width = '0px';
+        document.getElementById('loading').style.height = '0px';
+      }
+    });
   }
   else if (this.value == 'powerStored') {
     if (!powerStoredState) {
@@ -152,19 +180,6 @@ function toggle(){
       document.getElementById('tempDesc').style.fontSize = 'xx-small';
     }
   }
-  else if (this.value == 'daylight') {
-    if (!daylightState) {
-        daylightState = true;
-        document.getElementById('daylightDesc').style.visibility = 'visible';
-        document.getElementById('daylightDesc').style.fontSize = 'medium';
-
-    }
-    else {
-      daylightState = false;
-      document.getElementById('daylightDesc').style.visibility = 'hidden';
-      document.getElementById('daylightDesc').style.fontSize = 'xx-small';
-    }
-  }
   else if (this.value == 'interval') {
     // setting interval and checking for bad values
     var day = document.getElementById('Days').value;
@@ -188,14 +203,27 @@ function toggle(){
   else if (this.value == 'refresh') {
     // retrieve the respective data from firebase
     dbRef.child("Users").child("test").child("deviceMacAddress").child("systemSettings").update({'isRefreshing':true});
-    initSensor();
-    // update refresh time
-    document.getElementById('refreshTime').innerHTML = "00/00/0000 at 00:00";
+    this.disabled=true;
+    document.getElementById('refreshImg').src = 'scripts/images/refreshLoad.gif';
+    var id = this.id;
+    document.getElementById('humid').innerHTML = '...';
+    document.getElementById('powerOutput').innerHTML = '...';
+    document.getElementById('powerStored').innerHTML = '...';
+    document.getElementById('rain').innerHTML = '...';
+    document.getElementById('temp').innerHTML = '...';
+    dbRef.child("Users").child("test").child("deviceMacAddress").child("systemSettings").child("isRefreshing").on('value', function(snapshot) {
+      if (snapshot.val() == false) {
+        initSensor();
+        document.getElementById(id).disabled = false;
+        document.getElementById('refreshImg').src = 'scripts/images/refresh.png';
+        document.getElementById('refreshTime').innerHTML = "00/00/0000 at 00:00";
+      }
+    });
   }
   else if (this.value == 'rainToggle') {
     if (!rainToggleState) {
       // auto-clean toggle on, update in firebase
-
+      dbRef.child("Users").child("test").child("deviceMacAddress").child("systemSettings").update({'isAutoCleanOn':true});
 
       rainToggleState = true;
       document.getElementById('rainToggleImg').src = 'scripts/images/toggleOn.png';
@@ -203,7 +231,7 @@ function toggle(){
     }
     else {
       // auto-clean toggle off, update in firebase
-
+      dbRef.child("Users").child("test").child("deviceMacAddress").child("systemSettings").update({'isAutoCleanOn':false});
 
       rainToggleState = false;
       document.getElementById('rainToggleImg').src = 'scripts/images/toggleOff.png';
