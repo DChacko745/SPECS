@@ -53,11 +53,12 @@ String uid;
 
 // Variables to save database paths
 String databasePath;
+
 String tempPath;
 String humPath;
 String rainPath;
 String powerGenPath;
-String powerStoPath;
+String systemPowDrawPath;
 String batVoltPath;
 
 String cleaningIntervalPath;
@@ -82,11 +83,15 @@ int cleaningInterval = 300;
 float temperature;
 float humidity;
 int rain;
+float powerGenerated;
+float systemPowerDraw;
 float battery_voltage;
 float system_current_draw;
 
-const float panel_resistance = 0;
-const float system_resistance = 0;
+const float VOLTAGE_CONVERSION_VALUE = 192.0;
+const float CURRENT_CONVERSION_VALUE = 192.0;
+const float PANEL_RESISTANCE = 1;
+const float SYSTEM_RESISTANCE = 1;
 
 float temperature_threshold = 0; // minimum value for temperature sensor to accept its input (in Fahrenheit)
 float humidity_threshold = 0; // minimum value for humidity sensor to accept its input (20-80%)
@@ -150,21 +155,29 @@ void ReadSensors() {
 
   humidity = dht.readHumidity();
   temperature = dht.readTemperature(tempInFahrenheit);
-  battery_voltage = analogRead(BATTERY_VOLTAGE_SENSOR_PIN)/192.0;
-  system_current_draw = analogRead(SYSTEM_CURRENT_SENSOR_PIN);
   int rainTemp = -1*analogRead(RAIN_SENSOR_PIN);
   rain = map(rainTemp,-4096,0,0,100);
-  // NEED TO ADD CURRENT SENSOR
+
+  battery_voltage = analogRead(BATTERY_VOLTAGE_SENSOR_PIN) / VOLTAGE_CONVERSION_VALUE;
+  powerGenerated = pow(battery_voltage, 2) / PANEL_RESISTANCE;
+  system_current_draw = analogRead(SYSTEM_CURRENT_SENSOR_PIN) / CURRENT_CONVERSION_VALUE;
+  systemPowerDraw = pow(system_current_draw, 2) * SYSTEM_RESISTANCE;
 
   /*
   Serial.println("Humidity:");
   Serial.println(humidity, 5);
   Serial.println("Temperature:");
   Serial.println(temperature, 5);
-  Serial.println("Battery Voltage:");
-  Serial.println(battery_voltage);
   Serial.println("Rain:");
   Serial.println(rain);
+  Serial.println("Battery Voltage:");
+  Serial.println(battery_voltage);
+  Serial.println("Power Generated:");
+  Serial.println(powerGenerated);
+  Serial.println("System Current Draw:");
+  Serial.println(system_current_draw);
+  Serial.println("System Power Draw:");
+  Serial.println(systemPowerDraw);
   */
 }
 
@@ -178,6 +191,8 @@ void UpdateSensorData_FB() {
     sendFloat(humPath, humidity);
     sendFloat(batVoltPath, battery_voltage);
     sendFloat(rainPath, rain);
+    sendFloat(powerGenPath, powerGenerated);
+    sendFloat(systemPowDrawPath, systemPowerDraw);
     
     Firebase.RTDB.setString(&fbdo, lastSensReadPath.c_str(), getCurrentTime());
     Firebase.RTDB.setBool(&fbdo, isRefreshingPath.c_str(), false);
@@ -324,7 +339,7 @@ void setup(){
     humPath = databasePath + "/sensorData/humidity";
     rainPath = databasePath + "/sensorData/rain";
     powerGenPath = databasePath + "/sensorData/powerGenerated";
-    powerStoPath = databasePath + "/sensorData/powerStored";
+    systemPowDrawPath = databasePath + "/sensorData/systemPowerDraw";
     batVoltPath = databasePath + "/sensorData/batteryVoltage";
 
     cleaningIntervalPath = databasePath + "/systemData/cleaningInterval";
