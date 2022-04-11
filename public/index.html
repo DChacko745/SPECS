@@ -74,6 +74,8 @@
         <h2>Run A Cleaning</h2>
         <img src="scripts/images/loading.gif" alt="Loading" id="loading" style="width:0px;height:0px;visibility:hidden;">
         <p><button id="button" class="button" value="button"><span id="state">Go</button></p>
+        <h4><u>Last Cleaning Occured:</u></h4>
+        <h4><span id="lastCleaning">XX / XX / XXXX at XX : XX</span></h4>
       </div>
         <div class="card">
           <h2>Auto-Clean with Rain</h2>
@@ -84,6 +86,9 @@
     </div>
     <div class="card">
       <h2>Cleaning Interval</h2>
+      <button id="intervalToggle" class="info" value="intervalToggle"><img id="intervalTogImg" src="scripts/images/toggleOff.png" width="100px" height="auto"></button>
+      <p><span id="intervalTog">Off</span></p>
+      <img id="fakeLoad" src="scripts/images/refreshLoad.gif" width="50px" height="50px" style="margin-bottom:-15px;display:inline-block;visibility:hidden;">
       <form style="display:inline-block;">
         <select name = "Days" id = "Days">
         <option value = "Days" selected>Days</option>
@@ -141,10 +146,11 @@
         <option value = "55">55 Minutes</option>
         </select>
       </form>
-      <button id="intervalSet" class="okButton" value="interval">Ok</button>
-      <h4><u>Last Cleaning Occured:</u></h4>
-      <h4><span id="lastCleaning">XX / XX / XXXX at XX : XX</span></h4>
-      <h4><u>Next Cleaning Will Be:</u></h4>
+      <button id="intervalSet" class="okButton" value="interval" style="display:inline-block;">Ok</button>
+      <img id="refreshInterval" src="scripts/images/refreshLoad.gif" width="50px" height="50px" style="margin-bottom:-15px;display:inline-block;visibility:hidden;">
+      <h4 id="lastCleaningH"><u>Last Cleaning Occured:</u></h4>
+      <h4><span id="lastCleaningInt">XX / XX / XXXX at XX : XX</span></h4>
+      <h4 id="nextCleaningH"><u>Next Cleaning Will Be:</u></h4>
       <h4><span id="nextCleaning">XX / XX / XXXX at XX : XX</span></h4>
     </div>
     <div class="content2">

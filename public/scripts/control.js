@@ -5,6 +5,7 @@ var humidState = false;
 var rainState = false;
 var tempState = false;
 var rainToggleState = false;
+var intervalToggleState = false;
 
 // Firebase
 var dbRef = firebase.database().ref();
@@ -39,6 +40,7 @@ function initSensor() {
   dbRef.child("Users").child("test").child("deviceMacAddress").child("systemData").child("lastClean").get().then((snapshot) => {
     const data = snapshot.val();
     document.getElementById('lastCleaning').innerHTML = data.toString();
+    document.getElementById('lastCleaningInt').innerHTML = data.toString();
   });
 }
 function initButton() {
@@ -51,12 +53,14 @@ function initButton() {
   document.getElementById('rainInfo').addEventListener('click', toggle);
   document.getElementById('tempInfo').addEventListener('click', toggle);
   document.getElementById('rainToggle').addEventListener('click', toggle);
+  document.getElementById('intervalToggle').addEventListener('click', toggle);
 }
 function initExtras() {
   // initializing anything else from database that isn't sensor data
   dbRef.child("Users").child("test").child("deviceMacAddress").child("systemData").child("lastClean").get().then((snapshot) => {
     const data = snapshot.val();
     document.getElementById('lastCleaning').innerHTML = data.toString();
+    document.getElementById('lastCleaningInt').innerHTML = data.toString();
   });
   dbRef.child("Users").child("test").child("deviceMacAddress").child("systemData").child("nextClean").get().then((snapshot) => {
     const data = snapshot.val();
@@ -72,33 +76,11 @@ function initExtras() {
     var numHr = parseInt((data/60-numMin)/60)%24;
     var numDay = parseInt(((data/60-numMin)/60-numHr)/24);
 
-    document.getElementById('Days').getElementsByTagName('option')[numMin/5+1].selected = true;
+    document.getElementById('Minutes').getElementsByTagName('option')[numMin/5+1].selected = true;
     document.getElementById('Hours').getElementsByTagName('option')[numHr+1].selected = true;
-    document.getElementById('Minutes').getElementsByTagName('option')[numDay+1].selected = true;
-    
+    document.getElementById('Days').getElementsByTagName('option')[numDay+1].selected = true;
   });
-
-  dbRef.child("Users").child("test").child("deviceMacAddress").child("systemSettings").child("isCleaning").on('value', function(snapshot) {
-    if (snapshot.val() == false) {
-      dbRef.child("Users").child("test").child("deviceMacAddress").child("systemData").child("nextClean").get().then((snapshot) => {
-        const data = snapshot.val();
-        document.getElementById('nextCleaning').innerHTML = data.toString();
-      });
-      dbRef.child("Users").child("test").child("deviceMacAddress").child("systemData").child("lastClean").get().then((snapshot) => {
-        const data = snapshot.val();
-        document.getElementById('lastCleaning').innerHTML = data.toString();
-      });
-    }
-  });
-
-  dbRef.child("Users").child("test").child("deviceMacAddress").child("systemData").child("nextClean").on('value', function(snapshot) {
-    dbRef.child("Users").child("test").child("deviceMacAddress").child("systemData").child("nextClean").get().then((snapshot) => {
-      const data = snapshot.val();
-      document.getElementById('nextCleaning').innerHTML = data.toString();
-    });
-  });
-
-  dbRef.child("Users").child("test").child("deviceMacAddress").child("systemSettings").child("isAutoCleanOn").get().then((snapshot) => {
+  dbRef.child("Users").child("test").child("deviceMacAddress").child("systemSettings").child("toggleAutoClean").get().then((snapshot) => {
     const data = snapshot.val();
     if (data == true) {
       rainToggleState = true;
@@ -111,7 +93,74 @@ function initExtras() {
       document.getElementById('rainTog').innerHTML = 'Off';
     }
   });
+  dbRef.child("Users").child("test").child("deviceMacAddress").child("systemSettings").child("toggleIntervalCleaning").get().then((snapshot) => {
+    const data = snapshot.val();
+    if (data == true) {
+      intervalToggleState = true;
+      document.getElementById('intervalTogImg').src = 'scripts/images/toggleOn.png';
+      document.getElementById('intervalTog').innerHTML = 'On';
+    }
+    else {
+      intervalToggleState = false;
+      document.getElementById('intervalTogImg').src = 'scripts/images/toggleOff.png';
+      document.getElementById('intervalTog').innerHTML = 'Off';
+
+      document.getElementById('Days').style.visibility = 'hidden';
+      document.getElementById('Hours').style.visibility = 'hidden';
+      document.getElementById('Minutes').style.visibility = 'hidden';
+      document.getElementById('intervalSet').style.visibility = 'hidden';
+      document.getElementById('nextCleaningH').style.visibility = 'hidden';
+      document.getElementById('nextCleaning').style.visibility = 'hidden';
+      document.getElementById('lastCleaningH').style.visibility = 'hidden';
+      document.getElementById('lastCleaningInt').style.visibility = 'hidden';
+      document.getElementById('Days').style.display = 'none';
+      document.getElementById('Hours').style.display = 'none';
+      document.getElementById('Minutes').style.display = 'none';
+      document.getElementById('intervalSet').style.display = 'none';
+      document.getElementById('nextCleaningH').style.display = 'none';
+      document.getElementById('nextCleaning').style.display = 'none';
+      document.getElementById('lastCleaningH').style.display = 'none';
+      document.getElementById('lastCleaningInt').style.display = 'none';
+      document.getElementById('fakeLoad').style.display = 'none';
+      document.getElementById('refreshInterval').style.display = 'none';
+    }
+  });
 }
+
+dbRef.child("Users").child("test").child("deviceMacAddress").child("systemData").child("nextClean").on('value', function(snapshot) {
+  dbRef.child("Users").child("test").child("deviceMacAddress").child("systemData").child("nextClean").get().then((snapshot) => {
+    const data = snapshot.val();
+    document.getElementById('nextCleaning').innerHTML = data.toString();
+    document.getElementById('refreshInterval').style.visibility = 'hidden';
+    document.getElementById('intervalSet').style.background = '#0f8b8d';
+    document.getElementById('intervalSet').disabled = false;
+  });
+});
+dbRef.child("Users").child("test").child("deviceMacAddress").child("systemData").child("lastClean").on('value', function(snapshot) {
+  dbRef.child("Users").child("test").child("deviceMacAddress").child("systemData").child("lastClean").get().then((snapshot) => {
+    const data = snapshot.val();
+    document.getElementById('lastCleaning').innerHTML = data.toString();
+    document.getElementById('lastCleaningInt').innerHTML = data.toString();
+  });
+});
+dbRef.child("Users").child("test").child("deviceMacAddress").child("systemSettings").child("isRefreshing").on('value', function(snapshot) {
+  if (snapshot.val() == false) {
+    initSensor();
+    document.getElementById('refresh').disabled = false;
+    document.getElementById('refreshImg').src = 'scripts/images/refresh.png';
+    dbRef.child("Users").child("test").child("deviceMacAddress").child("systemData").child("lastSensorRead").get().then((snapshot) => {
+      const data = snapshot.val();
+      document.getElementById('refreshTime').innerHTML = data.toString();
+    });
+  }
+});
+dbRef.child("Users").child("test").child("deviceMacAddress").child("systemSettings").child("isUpdatingInterval").on('value', function(snapshot) {
+  if (snapshot.val() == false) {
+    document.getElementById('refreshInterval').style.visibility = 'hidden';
+    document.getElementById('intervalSet').style.background = '#0f8b8d';
+    document.getElementById('intervalSet').disabled = false;
+  }
+});
 function toggle(){
   if (this.value == 'button') {
     state = "Cleaning...";
@@ -220,12 +269,11 @@ function toggle(){
       // convert to secs for database
       var secs = 60*(60*((24*numDay)+numHr)+numMin);
       dbRef.child("Users").child("test").child("deviceMacAddress").child("systemData").update({'cleaningInterval':secs});
-      dbRef.child("Users").child("test").child("deviceMacAddress").child("systemData").child("nextClean").on('value', function(snapshot) {
-        dbRef.child("Users").child("test").child("deviceMacAddress").child("systemData").child("nextClean").get().then((snapshot) => {
-          const data = snapshot.val();
-          document.getElementById('nextCleaning').innerHTML = data.toString();
-        });
-      });
+      dbRef.child("Users").child("test").child("deviceMacAddress").child("systemSettings").update({'isUpdatingInterval':true});
+      document.getElementById('refreshInterval').style.visibility = 'visible';
+      this.disabled = true;
+      this.style.background = '#8c8c8c';
+      var id = this.id;
     }
   }
   else if (this.value == 'refresh') {
@@ -255,7 +303,7 @@ function toggle(){
   else if (this.value == 'rainToggle') {
     if (!rainToggleState) {
       // auto-clean toggle on, update in firebase
-      dbRef.child("Users").child("test").child("deviceMacAddress").child("systemSettings").update({'isAutoCleanOn':true});
+      dbRef.child("Users").child("test").child("deviceMacAddress").child("systemSettings").update({'toggleAutoClean':true});
 
       rainToggleState = true;
       document.getElementById('rainToggleImg').src = 'scripts/images/toggleOn.png';
@@ -263,11 +311,67 @@ function toggle(){
     }
     else {
       // auto-clean toggle off, update in firebase
-      dbRef.child("Users").child("test").child("deviceMacAddress").child("systemSettings").update({'isAutoCleanOn':false});
+      dbRef.child("Users").child("test").child("deviceMacAddress").child("systemSettings").update({'toggleAutoClean':false});
 
       rainToggleState = false;
       document.getElementById('rainToggleImg').src = 'scripts/images/toggleOff.png';
       document.getElementById('rainTog').innerHTML = 'Off';
+    }
+  }
+  else if (this.value == 'intervalToggle') {
+    if (!intervalToggleState) {
+      // auto-clean toggle on, update in firebase
+      dbRef.child("Users").child("test").child("deviceMacAddress").child("systemSettings").update({'toggleIntervalCleaning':true});
+
+      intervalToggleState = true;
+      document.getElementById('intervalTogImg').src = 'scripts/images/toggleOn.png';
+      document.getElementById('intervalTog').innerHTML = 'On';
+
+      document.getElementById('Days').style.visibility = 'visible';
+      document.getElementById('Hours').style.visibility = 'visible';
+      document.getElementById('Minutes').style.visibility = 'visible';
+      document.getElementById('intervalSet').style.visibility = 'visible';
+      document.getElementById('nextCleaningH').style.visibility = 'visible';
+      document.getElementById('nextCleaning').style.visibility = 'visible';
+      document.getElementById('lastCleaningH').style.visibility = 'visible';
+      document.getElementById('lastCleaningInt').style.visibility = 'visible';
+      document.getElementById('Days').style.display = 'inline';
+      document.getElementById('Hours').style.display = 'inline';
+      document.getElementById('Minutes').style.display = 'inline';
+      document.getElementById('intervalSet').style.display = 'inline';
+      document.getElementById('nextCleaningH').style.display = 'inline';
+      document.getElementById('nextCleaning').style.display = 'inline';
+      document.getElementById('lastCleaningH').style.display = 'block';
+      document.getElementById('lastCleaningInt').style.display = 'inline';
+      document.getElementById('fakeLoad').style.display = 'inline-block';
+      document.getElementById('refreshInterval').style.display = 'inline-block';
+    }
+    else {
+      // interval toggle off, update in firebase
+      dbRef.child("Users").child("test").child("deviceMacAddress").child("systemSettings").update({'toggleIntervalCleaning':false});
+
+      intervalToggleState = false;
+      document.getElementById('intervalTogImg').src = 'scripts/images/toggleOff.png';
+      document.getElementById('intervalTog').innerHTML = 'Off';
+      
+      document.getElementById('Days').style.visibility = 'hidden';
+      document.getElementById('Hours').style.visibility = 'hidden';
+      document.getElementById('Minutes').style.visibility = 'hidden';
+      document.getElementById('intervalSet').style.visibility = 'hidden';
+      document.getElementById('nextCleaningH').style.visibility = 'hidden';
+      document.getElementById('nextCleaning').style.visibility = 'hidden';
+      document.getElementById('lastCleaningH').style.visibility = 'hidden';
+      document.getElementById('lastCleaningInt').style.visibility = 'hidden';
+      document.getElementById('Days').style.display = 'none';
+      document.getElementById('Hours').style.display = 'none';
+      document.getElementById('Minutes').style.display = 'none';
+      document.getElementById('intervalSet').style.display = 'none';
+      document.getElementById('nextCleaningH').style.display = 'none';
+      document.getElementById('nextCleaning').style.display = 'none';
+      document.getElementById('lastCleaningH').style.display = 'none';
+      document.getElementById('lastCleaningInt').style.display = 'none';
+      document.getElementById('fakeLoad').style.display = 'none';
+      document.getElementById('refreshInterval').style.display = 'none';
     }
   }
 }
