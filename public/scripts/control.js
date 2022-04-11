@@ -3,6 +3,7 @@ var powerStoredState = false;
 var powerOutputState = false;
 var humidState = false;
 var rainState = false;
+var tempState = false;
 var rainToggleState = false;
 
 // Firebase
@@ -17,23 +18,27 @@ function onLoad(event) {
 function initSensor() {
   dbRef.child("Users").child("test").child("deviceMacAddress").child("sensorData").child("humidity").get().then((snapshot) => {
     const data = snapshot.val();
-    document.getElementById('humid').innerHTML = data.toString();
+    document.getElementById('humid').innerHTML = data.toString() + " %";
   });
   dbRef.child("Users").child("test").child("deviceMacAddress").child("sensorData").child("powerGenerated").get().then((snapshot) => {
     const data = snapshot.val();
-    document.getElementById('powerOutput').innerHTML = data.toString();
+    document.getElementById('powerOutput').innerHTML = data.toString() + " Watts";
   });
   dbRef.child("Users").child("test").child("deviceMacAddress").child("sensorData").child("systemPowerDraw").get().then((snapshot) => {
     const data = snapshot.val();
-    document.getElementById('powerStored').innerHTML = data.toString();
+    document.getElementById('powerStored').innerHTML = data.toString() + " Watts";
   });
   dbRef.child("Users").child("test").child("deviceMacAddress").child("sensorData").child("rain").get().then((snapshot) => {
     const data = snapshot.val();
-    document.getElementById('rain').innerHTML = data.toString();
+    document.getElementById('rain').innerHTML = data.toString() + " %";
   });
   dbRef.child("Users").child("test").child("deviceMacAddress").child("sensorData").child("temperature").get().then((snapshot) => {
     const data = snapshot.val();
-    document.getElementById('temp').innerHTML = data.toString();
+    document.getElementById('temp').innerHTML = data.toString() + " &deg;F";
+  });
+  dbRef.child("Users").child("test").child("deviceMacAddress").child("systemData").child("lastClean").get().then((snapshot) => {
+    const data = snapshot.val();
+    document.getElementById('lastCleaning').innerHTML = data.toString();
   });
 }
 function initButton() {
@@ -63,7 +68,6 @@ function initExtras() {
   });
   dbRef.child("Users").child("test").child("deviceMacAddress").child("systemData").child("cleaningInterval").get().then((snapshot) => {
     const data = snapshot.val();
-    //var secs = 60*(60*((24*numDay)+numHr)+numMin);
     var numMin = parseInt(data/60)%60;
     var numHr = parseInt((data/60-numMin)/60)%24;
     var numDay = parseInt(((data/60-numMin)/60-numHr)/24);
@@ -73,6 +77,27 @@ function initExtras() {
     document.getElementById('Minutes').getElementsByTagName('option')[numDay+1].selected = true;
     
   });
+
+  dbRef.child("Users").child("test").child("deviceMacAddress").child("systemSettings").child("isCleaning").on('value', function(snapshot) {
+    if (snapshot.val() == false) {
+      dbRef.child("Users").child("test").child("deviceMacAddress").child("systemData").child("nextClean").get().then((snapshot) => {
+        const data = snapshot.val();
+        document.getElementById('nextCleaning').innerHTML = data.toString();
+      });
+      dbRef.child("Users").child("test").child("deviceMacAddress").child("systemData").child("lastClean").get().then((snapshot) => {
+        const data = snapshot.val();
+        document.getElementById('lastCleaning').innerHTML = data.toString();
+      });
+    }
+  });
+
+  dbRef.child("Users").child("test").child("deviceMacAddress").child("systemData").child("nextClean").on('value', function(snapshot) {
+    dbRef.child("Users").child("test").child("deviceMacAddress").child("systemData").child("nextClean").get().then((snapshot) => {
+      const data = snapshot.val();
+      document.getElementById('nextCleaning').innerHTML = data.toString();
+    });
+  });
+
   dbRef.child("Users").child("test").child("deviceMacAddress").child("systemSettings").child("isAutoCleanOn").get().then((snapshot) => {
     const data = snapshot.val();
     if (data == true) {
@@ -195,9 +220,12 @@ function toggle(){
       // convert to secs for database
       var secs = 60*(60*((24*numDay)+numHr)+numMin);
       dbRef.child("Users").child("test").child("deviceMacAddress").child("systemData").update({'cleaningInterval':secs});
-      // Add logic to calculate months days etc.
-      document.getElementById('lastCleaning').innerHTML = secs;
-      document.getElementById('nextCleaning').innerHTML = "00 / 00 / 0000 at 00 : 00";
+      dbRef.child("Users").child("test").child("deviceMacAddress").child("systemData").child("nextClean").on('value', function(snapshot) {
+        dbRef.child("Users").child("test").child("deviceMacAddress").child("systemData").child("nextClean").get().then((snapshot) => {
+          const data = snapshot.val();
+          document.getElementById('nextCleaning').innerHTML = data.toString();
+        });
+      });
     }
   }
   else if (this.value == 'refresh') {
@@ -211,12 +239,16 @@ function toggle(){
     document.getElementById('powerStored').innerHTML = '...';
     document.getElementById('rain').innerHTML = '...';
     document.getElementById('temp').innerHTML = '...';
+    document.getElementById('refreshTime').innerHTML = '...';
     dbRef.child("Users").child("test").child("deviceMacAddress").child("systemSettings").child("isRefreshing").on('value', function(snapshot) {
       if (snapshot.val() == false) {
         initSensor();
         document.getElementById(id).disabled = false;
         document.getElementById('refreshImg').src = 'scripts/images/refresh.png';
-        document.getElementById('refreshTime').innerHTML = "00/00/0000 at 00:00";
+        dbRef.child("Users").child("test").child("deviceMacAddress").child("systemData").child("lastSensorRead").get().then((snapshot) => {
+          const data = snapshot.val();
+          document.getElementById('refreshTime').innerHTML = data.toString();
+        });
       }
     });
   }
