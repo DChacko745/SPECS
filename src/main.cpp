@@ -9,7 +9,7 @@
 //ESP Pin Definitions:
 #define MOTOR_PIN_1 25
 #define MOTOR_PIN_2 26
-#define MOTOR_STOP_1 13
+#define MOTOR_STOP_1 12
 #define MOTOR_STOP_2 35
 
 #define BATTERY_VOLTAGE_SENSOR_PIN 33
@@ -84,6 +84,10 @@ float humidity;
 float daylight;
 int rain;
 float battery_voltage;
+float system_current_draw;
+
+const float panel_resistance;
+const float system_resistance;
 
 float temperature_threshold; // minimum value for temperature sensor to accept its input (in Fahrenheit)
 float humidity_threshold; // minimum value for humidity sensor to accept its input (20-80%)
@@ -166,6 +170,7 @@ void ReadSensors() {
   temperature = dht.readTemperature(inFahrenheit);
   //daylight = analogRead(DAYLIGHT_SENSOR_PIN);
   battery_voltage = analogRead(BATTERY_VOLTAGE_SENSOR_PIN)/192.0;
+  system_current_draw = analogRead(SYSTEM_CURRENT_SENSOR_PIN);
   int rainTemp = -1*analogRead(RAIN_SENSOR_PIN);
   rain = map(rainTemp,-4096,0,0,100);
   // NEED TO ADD CURRENT SENSOR
@@ -207,11 +212,11 @@ void Clean() {
     cleanPrevMillis = millis();
 
     digitalWrite(MOTOR_PIN_1, HIGH); // Runs motor clockwise
-    //while (digitalRead(MOTOR_STOP_1) == LOW); // Waits until wiper reaches end of panel
+    //while (digitalRead(MOTOR_STOP_1) == HIGH); // Waits until wiper reaches end of panel
     digitalWrite(MOTOR_PIN_1, LOW); // Stop
     delay(2000); // Wait 2 seconds
     digitalWrite(MOTOR_PIN_2, HIGH); // Runs motor counterclockwise
-    //while (digitalRead(MOTOR_STOP_2) == LOW); // Waits until wiper reaches end of panel
+    //while (digitalRead(MOTOR_STOP_2) == HIGH); // Waits until wiper reaches end of panel
     digitalWrite(MOTOR_PIN_2, LOW); // Stop
     delay(cooldown_time);
 
@@ -256,8 +261,8 @@ void setup(){
     // Set pinModes
     pinMode(MOTOR_PIN_1, OUTPUT);
     pinMode(MOTOR_PIN_2, OUTPUT); 
-    pinMode(MOTOR_STOP_1, INPUT_PULLUP);
-    pinMode(MOTOR_STOP_2, INPUT_PULLUP);
+    pinMode(MOTOR_STOP_1, INPUT_PULLDOWN);
+    pinMode(MOTOR_STOP_2, INPUT_PULLDOWN);
     pinMode(BATTERY_VOLTAGE_SENSOR_PIN, INPUT_PULLDOWN);
     pinMode(SYSTEM_CURRENT_SENSOR_PIN, INPUT_PULLDOWN);
     //pinMode(DAYLIGHT_SENSOR_PIN, INPUT);
