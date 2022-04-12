@@ -159,7 +159,8 @@ void ReadSensors() {
   rain = map(rainTemp,-4096,0,0,100);
 
   battery_voltage = analogRead(BATTERY_VOLTAGE_SENSOR_PIN) / VOLTAGE_CONVERSION_VALUE;
-  powerGenerated = pow(battery_voltage, 2) / PANEL_RESISTANCE;
+  //powerGenerated = pow(battery_voltage, 2) / PANEL_RESISTANCE;
+  powerGenerated = battery_voltage;
   system_current_draw = analogRead(SYSTEM_CURRENT_SENSOR_PIN) / CURRENT_CONVERSION_VALUE;
   systemPowerDraw = pow(system_current_draw, 2) * SYSTEM_RESISTANCE;
 
