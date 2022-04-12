@@ -213,12 +213,18 @@ void Clean() {
     Firebase.RTDB.setBool(&fbdo, isCleaningPath.c_str(), true);
 
     digitalWrite(MOTOR_PIN_1, HIGH); // Runs motor clockwise
-    //while (digitalRead(MOTOR_STOP_1) == HIGH); // Waits until wiper reaches end of panel
+    Serial.print("Motor moves one direction");
+    while (digitalRead(MOTOR_STOP_1) == LOW); // Waits until wiper reaches end of panel
+    Serial.print("Motor stop 1 has circuit completed");
     digitalWrite(MOTOR_PIN_1, LOW); // Stop
+    Serial.print("Motor stops and waits for 2 seconds");
     delay(2000); // Wait 2 seconds
     digitalWrite(MOTOR_PIN_2, HIGH); // Runs motor counterclockwise
-    //while (digitalRead(MOTOR_STOP_2) == HIGH); // Waits until wiper reaches end of panel
+    Serial.print("Motor moves in other direction");
+    while (digitalRead(MOTOR_STOP_2) == LOW); // Waits until wiper reaches end of panel
+    Serial.print("Motor stop 2 has circuit completed");
     digitalWrite(MOTOR_PIN_2, LOW); // Stop
+    Serial.print("Motor stops");
     delay(cooldown_time);
 
     Firebase.RTDB.setString(&fbdo, lastCleanPath.c_str(), getCurrentTime());
@@ -351,7 +357,7 @@ void setup(){
     toggleIntervalCleaningPath = databasePath + "/systemSettings/toggleIntervalCleaning";
     isCleaningPath = databasePath + "/systemSettings/isCleaning";
     isRefreshingPath = databasePath + "/systemSettings/isRefreshing";
-    isUpdatingIntervalPath = databasePath + "/systemSettings/isUpdatingCleaning";
+    isUpdatingIntervalPath = databasePath + "/systemSettings/isUpdatingInterval";
     tempInFahrenheitPath = databasePath + "/systemSettings/tempInFahrenheit";
 
     Firebase.RTDB.setString(&fbdo, "/Users/test/Name", "SPECS Team");
