@@ -162,7 +162,8 @@ void ReadSensors() {
   //powerGenerated = pow(battery_voltage, 2) / PANEL_RESISTANCE;
   powerGenerated = battery_voltage;
   system_current_draw = analogRead(SYSTEM_CURRENT_SENSOR_PIN) / CURRENT_CONVERSION_VALUE;
-  systemPowerDraw = pow(system_current_draw, 2) * SYSTEM_RESISTANCE;
+  //systemPowerDraw = pow(system_current_draw, 2) * SYSTEM_RESISTANCE;
+  systemPowerDraw = 0;
 
   /*
   Serial.println("Humidity:");
@@ -214,14 +215,16 @@ void Clean() {
     Firebase.RTDB.setBool(&fbdo, isCleaningPath.c_str(), true);
     digitalWrite(MOTOR_PIN_1, HIGH);// Runs motor clockwise
     //Serial.print("Motor moves one direction");
-    while (digitalRead(MOTOR_STOP_2) != HIGH); // Waits until wiper reaches end of panel
+    for (int i = 0; i < 3; i++)
+      while (digitalRead(MOTOR_STOP_2) != HIGH); // Waits until wiper reaches end of panel
     //Serial.print("Motor stop 1 has circuit completed");
     digitalWrite(MOTOR_PIN_1, LOW); // Stop
     //Serial.print("Motor stops and waits for 2 seconds");
     delay(1000); // Wait 1 second
     digitalWrite(MOTOR_PIN_2, HIGH); // Runs motor counterclockwise
     //Serial.print("Motor moves in other direction");
-    while (digitalRead(MOTOR_STOP_1) != HIGH); // Waits until wiper reaches end of panel
+    for (int i = 0; i < 3; i++)
+      while (digitalRead(MOTOR_STOP_1) != HIGH); // Waits until wiper reaches end of panel
     //Serial.print("Motor stop 2 has circuit completed");
     digitalWrite(MOTOR_PIN_2, LOW); // Stop
     //Serial.print("Motor stops");
