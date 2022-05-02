@@ -23,7 +23,7 @@ function initSensor() {
   });
   dbRef.child("Users").child("test").child("deviceMacAddress").child("sensorData").child("powerGenerated").get().then((snapshot) => {
     const data = snapshot.val();
-    document.getElementById('powerOutput').innerHTML = data.toString() + " Volts";
+    document.getElementById('powerOutput').innerHTML = data.toString() + " Watts";
   });
   dbRef.child("Users").child("test").child("deviceMacAddress").child("sensorData").child("systemPowerDraw").get().then((snapshot) => {
     const data = snapshot.val();
