@@ -8,7 +8,7 @@
     <!--link rel="icon" href="scripts/images/OfficialLogo.png"-->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <!-- update the version number as needed -->
@@ -17,10 +17,10 @@
     <!-- include only the Firebase features as you need -->
     <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-database.js"></script>
-    <!--script src="https://kit.fontawesome.com/yourcode.js" crossorigin="anonymous"></script-->
+    <script src="https://kit.fontawesome.com/yourcode.js" crossorigin="anonymous"></script>
 
-	<!--script type="text/javascript">
-		var divs = ["cmd-clean", "climate-vars", "sys-data"]; 
+	<script type="text/javascript">
+		var divs = ["cmd-clean", "climate-vars", "sys-data", "settings"]; 
 		var visibleId = null;
 		function show(id) {
 			if(visibleId !== id) { visibleId = id; }
@@ -42,7 +42,7 @@
 			}
 		}
 			
-    </script--> 
+    </script> 
 	
 	<script>
      // REPLACE WITH YOUR web app's Firebase configuration
@@ -64,30 +64,34 @@
 
     </script>
 		
-    <!--link rel="stylesheet" href="font-awesome-4.7.0/css/font-awesome.min.css" 
-    integrity="wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous"-->
-	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" 
-	integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
     <link rel="icon" type="image/png" href="scripts/images/OfficialLogo.png">
     <link rel="stylesheet" type="text/css" href="style.css">
     <!--link rel="stylesheet" type="text/css" href="ui-style.css"-->
-	<link rel="stylesheet" type="text/css" href="temp-style.css">
-	<!--link rel="stylesheet" type="text/css" href="login.css"-->
-	<link rel="stylesheet" type="text/css" href="guage.css">
-	<link rel="stylesheet" type="text/css" href="resp.css">
+    <link rel="stylesheet" type="text/css" href="temp-style.css">
+    <link rel="stylesheet" type="text/css" href="login.css">
+    <link rel="stylesheet" type="text/css" href="guage.css">
+    <link rel="stylesheet" type="text/css" href="resp.css">
+
+    <!--script src="https://www.gstatic.com/firebasejs/ui/4.4.0/firebase-ui-auth.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/4.4.0/firebase-ui-auth.css" /-->
   </head>
 
   <body>
 
-  		<!--should be displayed once web page is loaded, and when user signs out--> 
-		<!--constant row--> 
-		<div class="row-0 topnav" id="topnav" style="padding: 15px;">
-			<div id="tnav-img"><img src="scripts/images/OfficialLogo.png" style="float:right; vertical-align: middle;" width="128" height="78"></img>
-			</div>
-			<h1 style="float:left; vertical-align: middle;">SPECS Wiper System</h1>
-		</div>
-
+    <!--CONTENT (SENSOR READINGS)-->
+	
+		<!--AUTHENTICATION BAR (USER DETAILS/LOGOUT BUTTON)-->
+		<!--div id="authentication-bar" style="display: none; border: 2px solid plum;">
+			<p><span id="authentication-status">User logged in</span>
+				<span id="user-details">USEREMAIL</span>
+				<a href="/" id="logout-link">(logout)</a>
+			</p>
+		</div-->
+	
 		<!--LOGIN FORM-->
+		   
+		<!--should be displayed once web page is loaded, and when user signs out--> 
 		<div class="login-page">
 			<form id="login-form" style="display: none;">
 				<div class="form-elements-container">
@@ -102,59 +106,52 @@
 				</div>
 			</form>
 		</div> 
-
-		<!--div class="row-1 content-sign-in mx-auto" id="content-sign-in">
-			<h6 id="authentication-bar" style="padding:5px;">Welcome,
-				<span id="user-details">USEREMAIL</span> 
-				<a href="/" id="logout-link">(logout)</a>
-			</h6>
-		</div-->
 		
 				
 		<!--home page, user can run a cleaning, or do other things--> 
-		<div class="container-fluid content-sign-in"> 
+		<div class="container-fluid content-sign-in" id="container"> 
 		
 			<!--constant row--> 
-			<!--div class="row row-0 topnav" id="topnav" style="padding: 15px;">
+			<div class="row row-0 topnav" id="topnav" style="padding: 15px;">
 				<h1 style="float:left; vertical-align: middle;">SPECS Wiper System</h1>
 				<img src="scripts/images/OfficialLogo.png" style="float:right; vertical-align: middle;" width="128" height="78"></img>
-			</div-->
+			</div>
 			
 			<div class="row row-1" id="main">
 				<!--constant column--> 
-				<!--div class="col-1 side-bar" id="side-bar" style="margin:0; padding-left:5px; padding-right: 5px;">
+				<div class="col-1 side-bar" id="side-bar" style="margin:0; padding-left:5px; padding-right: 5px;">
 					
 					<ul >
 						<li><a href="#" onclick="show('cmd-clean');"><i class="fa fa-home" id="icon-top" aria-hidden="true" style="font-size: 20px;"></i>
 							<p>Home</p></a></li> 
-						<li><a href="#" onclick="show('climate-vars');"><i class="fa fa-temperature-low" style="font-size: 20px;"></i>
+						<li><a href="#" onclick="show('climate-vars');"><i class="fas fa-temperature-low" style="font-size: 20px;"></i>
 							<p>Climate</p></a></li>
 						<li><a href="#" onclick="show('sys-data');"><i class="fa fa-line-chart" style="font-size:20px;"></i>
 							<p>System Data</p></a></li>
-						<li><a href="#" onclick="show('settings');"><i class="fa fa-gear" id="icon-btm" style="font-size:20px; margin-bottom: 0;"></i>Settings</a></li>
+						<!--li><a href="#" onclick="show('settings');"><i class="fa fa-gear" id="icon-btm" style="font-size:20px; margin-bottom: 0;"></i>Settings</a></li-->
 					</ul>
 					
-				</div-->
+				</div>
 								
 				<!--content-card-01: home page, display all funcs. -->
-				<div class="col-10 mx-auto content" id="cmd-clean" style="margin-top: 2%; margin-bottom: 2%;">
+				<div class="col-xs-12 col-md-10 mx-auto content" id="cmd-clean">
 				
 					<div class="row row-1 content-sign-in mx-auto" id="content-sign-in">
-						<h6 id="authentication-bar" style="padding:5px;">Welcome
-							<span id="user-details"></span> 
+						<h6 id="authentication-bar" style="padding:5px;">Welcome,
+							<span id="user-details">USEREMAIL</span> 
 							<a href="/" id="logout-link">(logout)</a>
 						</h6>
 					</div>
 									
-					<div class="row row-2"> 
+					<div class="row row-2 mx-auto"> 
 					
-						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 card mx-auto" id="scard1">
+						<div class="col-xs-12 col-sm-9 col-md-6 card mx-auto">
 							<h2>Run A Cleaning</h2>
 							<img src="scripts/images/loading.gif" alt="Loading" id="loading" style="width:0px;height:0px;visibility:hidden;">
 							<button id="button" class="button" value="button"><span id="state">Go</span></button>
 						</div>
 						
-						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-5 card mx-auto" id="scard2">
+						<div class="col-xs-12 col-sm-9 col-md-5 card mx-auto" id="scard2">
 							<h2>Auto-Clean with Rain</h2>
 							<p>System will run when it is raining</p>
 							<button id="rainToggle" class="info" value="rainToggle"><img id="rainToggleImg" 
@@ -163,12 +160,9 @@
 						</div> 
 						
 						<!--content-card-04:settings-->
-						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 settings mx-auto card" id="scard3">
-							<div class="mx-auto">
+						<div class="col-xs-12 col-sm-9 col-md-6 settings mx-auto card">
+							<div>
 								  <h2>Cleaning Interval</h2>
-                                  <button id="intervalToggle" class="info" value="intervalToggle"><img id="intervalTogImg" src="scripts/images/toggleOff.png" width="100px" height="auto"></button>
-                                  <p><span id="intervalTog">Off</span></p>
-                                  <img id="fakeLoad" src="scripts/images/refreshLoad.gif" width="50px" height="50px" style="margin-bottom:-15px;display:inline-block;visibility:hidden;">
 								  <form style="display:inline-block;">
 									<select name = "Days" id = "Days">
 									<option value = "Days" selected>Days</option>
@@ -221,16 +215,15 @@
 									<option value = "30">30 Minutes</option>	
 									<option value = "35">35 Minutes</option>
 									<option value = "40">40 Minutes</option>
-									<option value ="40">45 Minutes</option>
+									<option value = "40">45 Minutes</option>
 									<option value = "50">50 Minutes</option>
 									<option value = "55">55 Minutes</option>
 									</select>
 								  </form>
 								  <button id="intervalSet" class="okButton" value="interval">Ok</button>
-								  <img id="refreshInterval" src="scripts/images/refreshLoad.gif" width="50px" height="50px" style="margin-bottom:-15px;display:inline-block;visibility:hidden;">
-                                  <h4 id="lastCleaningH"><u>Last Cleaning Occured:</u></h4>
-								  <h4><span id="lastCleaningInt">XX / XX / XXXX at XX : XX</span></h4>
-								  <h4 id="nextCleaningH"><u>Next Cleaning Will Be:</u></h4>
+								  <h4><u>Last Cleaning Occured:</u></h4>
+								  <h4><span id="lastCleaning">XX / XX / XXXX at XX : XX</span></h4>
+								  <h4><u>Next Cleaning Will Be:</u></h4>
 								  <h4><span id="nextCleaning">XX / XX / XXXX at XX : XX</span></h4>
 							</div> 
 						</div> 
@@ -238,17 +231,17 @@
 				</div>
 				
 				<!--content-card-02: climate page, display climate data -->
-				<div class="col-10 mx-auto" id="climate-vars" style="margin-top: 2%; margin-bottom: 2%; "> 
-					
-					<div class="row row-4 mx-auto content2 card2" style="margin-top: 2%; padding: 1%;"> 
-							<h3 style="width: 100%;">System Data</h3>
+				<div class="col-10 mx-auto" id="climate-vars" style="display: none; margin-top: 5%; margin-bottom: 5%;"> 
+					<div class="row row-4  mx-auto content2 card2" style="margin-top: 2%; padding: 5px; padding-bottom: 5px; height: 22%;"> 
+							<h3 style="width: 100%;" >System Data</h3>
 							<p style="width: 100%;"> View information about climate conditions obtained from sensors</p>
 					</div> 
-									
-					<div class="row row-3 climate-vars mx-auto">
+				
 					
-						<div class="col-xs-6 col-sm-6 col-md-6 col-lg-3 card3 left mx-auto">
-						  <p id="humidDesc" style="visibility:hidden;font-size:xx-small;">Measures the humidity in the air where the system is located</p>
+					<div class="row row-3 climate-vars">
+					
+						<div class="col-xs-6 col-md-3 col-lg-3 card3 left mx-auto">
+						  <p id="humidDesc" style="visibility:hidden;font-size:xx-small;">What is a humidity sensor</p>
 						  <button id="humidInfo" class="info" value="humid"><img src="scripts/images/info.png" width="20px" height="20px"></button>
 						  <h2 style="display:block">Humidity</h2>
 						  <div class="guage hVal">
@@ -261,8 +254,8 @@
 						  </div>
 						</div>
 						
-						<div class="col-xs-6 col-sm-6 col-md-6 col-lg-3 card3 middle mx-auto">
-						  <p id="rainDesc" style="visibility:hidden;font-size:xx-small;">Measures the amount of rain where the system is located</p>
+						<div class="col-xs-6 col-md-3 col-lg-3 card3 middle mx-auto">
+						  <p id="rainDesc" style="visibility:hidden;font-size:xx-small;">What is a rain sensor</p>
 						  <button id="rainInfo" class="info" value="rain"><img src="scripts/images/info.png" width="20px" height="20px"></button>
 						  <h2 style="display:block">Rain</h2>
 						  <div class="guage rVal">
@@ -275,14 +268,14 @@
 						  </div>	
 						</div>
 						
-						<div class="col-xs-6 col-sm-6 col-md-6 col-lg-3 card3 right mx-auto">
-						  <p id="tempDesc" style="visibility:hidden; font-size:xx-small;">Measures the temperature where the system is located</p>
+						<div class="col-xs-6 col-md-3 col-lg-3 card3 right mx-auto">
+						  <p id="tempDesc" style="visibility:hidden; font-size:xx-small;">What is a temperature sensor</p>
 						  <button id="tempInfo" class="info" value="temp"><img src="scripts/images/info.png" width="20px" height="20px"></button>
 						  <h2 style="display:inline-block">Temperature</h2>
 						  <div class="guage tVal">
-							<div class="guage__body tVal__body">
+							<div class="guage__body">
 								<div class="guage__fill tVal__fill"></div>
-								<div class="guage__cover tVal__cover">
+								<div class="guage__cover">
 									<p class="temp"><button id="sensors" class="sensors"><span id="temp">[Data]</span></button></p>
 								</div>
 							</div>
@@ -293,22 +286,21 @@
 				</div> 
 				
 				<!--content-card-03: power & efficiency-->
-				<div class="col-10 mx-auto" id="sys-data" style="margin-top: 2%; margin-bottom: 2%;"> 
+				<div class="col-10 mx-auto" id="sys-data" style="display: none;"> 
 					<div class="row row-6  mx-auto content2 card2" style="margin-top: 2%; padding: 1%;"> 
-							<h3 style="width: 100%;" >
+							<h3 style="width: 100%;" >Power and Efficiency Data
 								<button id="refresh" class="info" value="refresh" style="float:right;">
 									<img id="refreshImg" src="scripts/images/refresh.png" width="25px" height="25px">
 								</button>
-								Power and Efficiency Data
 							</h3>
 							<p style="width: 100%;"> View information from about system power storage and output</p>
 							<p style="width: 100%; margin-bottom: 0px;"> Last Updated: <span id="refreshTime">XX/XX/XXXX at XX:XX</span> </p>
-							<!--img src="scripts/images/refresh.png" width="50px" height="50px" style="visibility:visible;"-->
+							<!--img src="scripts/images/refresh.png" width="50px" height="50px" style="visibility:hidden;"-->
 					</div> 
 					
 					<div class="row mx-auto row-5">
-						<div class="col-xs-6 col-sm-6 col-md-6 col-lg-4 mx-auto card3 p-div">
-						  <p id="powerStoredDesc" style="visibility:hidden;font-size:xx-small;">Measures the power the cleaning system is drawing from the solar panel</p>
+						<div class="col-xs-6 col-md-4 mx-auto card3 p-div">
+						  <p id="powerStoredDesc" style="visibility:hidden;font-size:xx-small;">What is power stored</p>
 						  <button id="powerStoredInfo" class="info" value="powerStored"><img src="scripts/images/info.png" width="20px" height="20px"></button>
 						  <h2 style="display:inline-block">System Power Draw</h2>
 							<div class="guage sVal">
@@ -321,8 +313,8 @@
 							</div>
 						</div>	
 						
-						<div class="col-xs-6 col-sm-6 col-md-6 col-lg-4 mx-auto card3 p-div">
-						  <p id="powerOutputDesc" style="visibility:hidden;font-size:xx-small;">Measures the power generated by the solar panel unit</p>
+						<div class="col-xs-6 col-md-4 mx-auto card3 p-div">
+						  <p id="powerOutputDesc" style="visibility:hidden;font-size:xx-small;">What is power output</p>
 						  <button id="powerOutputInfo" class="info" value="powerOutput"><img src="scripts/images/info.png" width="20px" height="20px"></button>
 						  <h2 style="display:inline-block">Battery Voltage</h2>
 						  <div class="guage pVal">
@@ -336,8 +328,26 @@
 						</div>
 							
 					</div>
-				</div> 	
+			</div> 	
 		</div>
+		
+		<!--script> 
+			const guageElement = document.querySelector(".guage"); 
+			function showVal(guage, value) {
+			
+				//const my-guage = guage.querySelector(".guage__fill"); 
+				
+				if (value < 0 || value > 100) {
+					return; 
+				}
+				
+				//for(var i=0; i<guageElement.length; i++) {	
+					//guage.querySelectorAll(".guage__fill")[i].style.transform = `rotate(${value/200}turn)`;
+				guage.querySelector(".guage__fill").style.transform = `rotate(${value/200}turn)`;
+				/*}*/
+			}
+			showVal(guageElement, 70);
+		</script-->
 				
 		<script src="scripts/auth.js"></script>
 		<script src="scripts/index.js"></script>

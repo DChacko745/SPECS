@@ -1,10 +1,6 @@
 html {
     font-family: Arial, Helvetica, sans-serif;
     text-align: center;
-    margin: 0;
-    padding: 0;
-	/*height: auto; */
-	
   }
   h1 {
     font-size: 2rem;
@@ -14,8 +10,7 @@ html {
   h2{
     font-size: 1.8rem;
     font-weight: bold;
-    color: black;
-	text-align: center; 
+    color: #000000;
   }
   h3{
     font-size: 2rem;
@@ -37,57 +32,50 @@ html {
   body {
     margin: 0;
     background-color: #d8d8d8;
-	height: auto; 
-	
   }
   .content {
     padding: 30px;
-    /*margin: 10px;
-    max-width: 600px; */
+    margin: 10px;
+    max-width: 600px;
     display:inline-block;
   }
-  /*.content2 {
-	border: 1px solid brown; 
-    /*padding: 30px;
-    margin: 0 auto;*
+  .content2 {
+    padding: 30px;
+    margin: 0 auto;
     max-width:1200px;
-  }*/
+  }
   .card {
-    background-color: #ffffff;
+    background-color: #ffffff;;
     margin: 10px 10px 10px 10px;
     box-shadow: 2px 2px 12px 1px rgba(54, 54, 54, 0.5);
-    padding-top: 20px;
-    padding-bottom: 20px;
-    justify-content: center;
-    text-align: center;
+    padding-top:10px;
+    padding-bottom:20px;
+    width:600px;
     display:inline-block;
   }
   .card2 {
-    background-color: #272a2a; 
-    text-align: center !important; 
-    justify-content: center !important; 
-    /*box-shadow: 2px 2px 12px 1px rgba(54, 54, 54, 0.5);
+    background-color: #ffffff;;
+    box-shadow: 2px 2px 12px 1px rgba(54, 54, 54, 0.5);
     padding-top:10px;
-    padding-bottom:20px;*/
+    padding-bottom:20px;
   }
   .card3 {
-    background-color: #272a2a;
+    background-color: #ffffff;;
     outline-style:hidden;
-    /* box-shadow: 0 1px 0 #000000 inset, 0 -1px 0 #000000 inset;*/
-    padding-top: 5%;
-    padding-bottom: 5%;
-	  margin: 10%; 
+    box-shadow: 0 1px 0 #000000 inset, 0 -1px 0 #000000 inset;
+    padding-top:10px;
+    padding-bottom:20px;
   }
   .sensors {
+    padding: 15px 50px;
     font-size: 24px;
     text-align: center;
-	  justify-content: center; 
     outline: none;
-    color: black;
-	/*box-sizing: border-box; */ 
+    color: #fff;
+    background-color: #444444;
   }
   .button {
-	  padding: 15px 50px;
+    padding: 15px 50px;
     font-size: 24px;
     text-align: center;
     outline: none;
@@ -105,7 +93,7 @@ html {
    }
    .okButton {
     padding: 12px 12px;
-    /*font-size: 1.2rem;*/
+    font-size: 1.2rem;
     text-align: center;
     outline: none;
     color: #fff;
@@ -113,12 +101,10 @@ html {
     border: none;
     border-radius: 5px;
    }
-   .info	 {
+   .info {
     outline-style: hidden;
     border:none;
     background-color: #ffffff;
-    justify-content: center;
-    align-content: center;
    }
    .button:active {
      background-color: #0f8b8d;

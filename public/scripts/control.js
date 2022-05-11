@@ -7,6 +7,47 @@ var tempState = false;
 var rainToggleState = false;
 var intervalToggleState = false;
 
+// to display guage values
+//refers to all elements of class guage 
+
+//const guageElement = document.querySelector(".guage");
+//const guageInner = document.querySelector(".guage").querySelector(".guage__fill"); 
+
+//for temperature values 
+const hElem = document.querySelector(".hVal").querySelector(".hVal__fill"); 
+const rElem = document.querySelector(".rVal").querySelector(".rVal__fill"); 
+const tElem = document.querySelector(".tVal").querySelector(".tVal__fill"); 
+
+//for power output 
+const sElem = document.querySelector(".sVal").querySelector(".sVal__fill"); 
+const pElem = document.querySelector(".pVal").querySelector(".pVal__fill"); 
+function showVal(guage, value) {
+
+	//const my-guage = guage.querySelector(".guage__fill"); 
+	/*if(guage == tElem) {
+    if(Math.sign(value) === -1 && Math.abs(value) == 100) {
+      guage.style.transform = `rotate(${0}turn)`; 
+      //`rotate(${value/200}turn)`;
+    }
+
+    else if(value < 0) {
+      value = Math.abs(value); 
+      guage.style.transform = `rotate(${value/400}turn)`;
+    }
+  }
+	else if (value < 0 || value > 100) {
+		return; 
+	}*/
+
+  if (value < 0 || value > 100) {
+		return; 
+  }
+	guage.style.transform = `rotate(${value/200}turn)`;
+	//for(var i=0; i<guageElement.length; i++) {	
+		//guage.querySelectorAll(".guage__fill")[i].style.transform = `rotate(${value/200}turn)`;
+	
+}
+
 // Firebase
 var dbRef = firebase.database().ref();
 
@@ -20,26 +61,31 @@ function initSensor() {
   dbRef.child("Users").child("test").child("deviceMacAddress").child("sensorData").child("humidity").get().then((snapshot) => {
     const data = snapshot.val();
     document.getElementById('humid').innerHTML = data.toString() + " %";
+    showVal(hElem, data);
   });
   dbRef.child("Users").child("test").child("deviceMacAddress").child("sensorData").child("powerGenerated").get().then((snapshot) => {
     const data = snapshot.val();
     document.getElementById('powerOutput').innerHTML = data.toString() + " Volts";
+    showVal(pElem, data);
   });
   dbRef.child("Users").child("test").child("deviceMacAddress").child("sensorData").child("systemPowerDraw").get().then((snapshot) => {
     const data = snapshot.val();
     document.getElementById('powerStored').innerHTML = data.toString() + " Watts";
+    showVal(sElem, data);
   });
   dbRef.child("Users").child("test").child("deviceMacAddress").child("sensorData").child("rain").get().then((snapshot) => {
     const data = snapshot.val();
     document.getElementById('rain').innerHTML = data.toString() + " %";
+    showVal(rElem, data);
   });
   dbRef.child("Users").child("test").child("deviceMacAddress").child("sensorData").child("temperature").get().then((snapshot) => {
     const data = snapshot.val();
     document.getElementById('temp').innerHTML = data.toString() + " &deg;F";
+    showVal(tElem, data);
   });
   dbRef.child("Users").child("test").child("deviceMacAddress").child("systemData").child("lastClean").get().then((snapshot) => {
     const data = snapshot.val();
-    document.getElementById('lastCleaning').innerHTML = data.toString();
+    /*document.getElementById('lastCleaning').innerHTML = data.toString();*/
     document.getElementById('lastCleaningInt').innerHTML = data.toString();
   });
 }
@@ -59,7 +105,7 @@ function initExtras() {
   // initializing anything else from database that isn't sensor data
   dbRef.child("Users").child("test").child("deviceMacAddress").child("systemData").child("lastClean").get().then((snapshot) => {
     const data = snapshot.val();
-    document.getElementById('lastCleaning').innerHTML = data.toString();
+    /*document.getElementById('lastCleaning').innerHTML = data.toString();*/
     document.getElementById('lastCleaningInt').innerHTML = data.toString();
   });
   dbRef.child("Users").child("test").child("deviceMacAddress").child("systemData").child("nextClean").get().then((snapshot) => {
@@ -139,7 +185,7 @@ dbRef.child("Users").child("test").child("deviceMacAddress").child("systemData")
 dbRef.child("Users").child("test").child("deviceMacAddress").child("systemData").child("lastClean").on('value', function(snapshot) {
   dbRef.child("Users").child("test").child("deviceMacAddress").child("systemData").child("lastClean").get().then((snapshot) => {
     const data = snapshot.val();
-    document.getElementById('lastCleaning').innerHTML = data.toString();
+    /*document.getElementById('lastCleaningH').innerHTML = data.toString();*/
     document.getElementById('lastCleaningInt').innerHTML = data.toString();
   });
 });

@@ -1,0 +1,64 @@
+@media screen and (max-width: 991.98px) {
+
+	#side-bar {
+		display: none !important; 
+		border: 3px solid pink; 
+	}
+	
+	#settings, #sys-data, #climate-vars, #cmd-clean { 
+		display: block !important; 
+	}
+	
+	#climate-vars, #sys-data { 
+		margin-top: 20%; 
+	} 
+
+	.row-2, .row-3, .row-5 { 
+		display: flex; 
+		flex-direction: column;
+	}
+
+	#scard1 {
+		overflow-x: hidden;
+	}
+
+	#scard2 { 
+		order: 3; 
+	}
+
+	/*.refresh { 
+		position: absolute;
+		top: 5px;
+		margin-left: 45%;
+		margin-right: 45%;
+		margin-bottom: 5%;
+
+	}*/
+
+	.topnav, #tnav-img { 
+		width: 100%; 
+		text-align: center;
+		justify-content: center;
+	}
+
+	.topnav img, .card2 button { 
+		text-align: center;
+		justify-content: center;
+	}
+	
+	.card2 button { 
+		display: block;
+	}
+
+	.topnav h1, .topnav img, .card2 button { 
+		float: none; 
+	}
+
+	.card form { 
+		text-align: center;
+		justify-content: center;		
+	}
+
+}
+	
+	

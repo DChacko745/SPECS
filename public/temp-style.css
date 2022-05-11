@@ -1,0 +1,158 @@
+* {	box-sizing: border-box; }
+
+html {
+	height: 100%; 
+	padding: 0px; 
+	/*border: 3px solid red;*/
+	overflow-y: scroll; 
+} 
+body {
+    /*margin: 10px;*/
+    /*border: 3px solid blue;*/
+    padding: 0px;
+	min-height: 100%; 
+	
+}
+
+/*.container-fluid, .col-1 {
+	border: 3px solid green; 
+}*/
+
+.top-nav {
+	min-height: 80px; 
+	width: 100%;
+}
+
+#authentication-bar, #user-details, #logout-link { 
+	display: block; 
+	text-align: center;
+	justify-content: center;
+}
+
+.side-bar {
+	width: 10%; 
+	text-align: left; 
+	justify-content: left; 
+	/*position: absolute; 
+	bottom: 0; 
+	left: 0; 
+	top: 0;
+	margin-left: 0; 
+	/*height: auto; */
+	background-color: black; 
+
+	/*has to float left 
+	for side-by-side effect*/
+}
+
+.side-bar ul, .side-bar li, .side-bar a{
+	display: block; 
+	list-style: none; 
+	margin-left: 0; 
+	margin-right: 0; 
+	padding: 0; 
+	text-align: center; 
+}
+
+.side-bar li {
+	margin-top: 10%; 
+	padding-top: 30%; 
+	padding-bottom: 30%;
+	border-bottom: 2px solid #D7D9DE; 
+	/*border-top: 2px solid #D7D9DE; */
+}
+
+.side-bar a {
+	height: 30%; 
+	/*border: 2px dashed gray; */
+	margin-bottom: 20%; 
+	color: #D7D9DE;  
+}
+
+.fa, .fas { 
+	padding: 5px; 
+}
+
+.col-10 { 
+	/*border: 3px solid blue; */
+	justify-content: center; 
+	/*background-color: #7F8C8D;*/
+} 
+
+/*#cmd-clean { 
+	background-color: #424949; 
+}*/
+
+.row-1, .row-4 { 
+	text-align: center; 
+	justify-content: center; 
+	/*border: 2px solid red; */
+}
+
+.row-child img { 
+	/*for cleaning gif*/
+	overflow: hidden; 
+	margin-right: 5%;
+}
+
+.row-child h2, .row-child button {
+	text-align: center; 
+	justify-content: center; 
+}
+
+.card {
+   /*margin-top: 5%; */
+   justify-content: center; 
+}
+
+.card h2, .card h4, .card button, .card img {
+    justify-content: center;
+    align-content: center;
+    text-align: center;
+}
+
+.card2 h3, .card2 p { 
+	color: white; 
+	/*border: 2px solid green; */
+	align-content: center;
+	text-align: center !important; 
+	display: block; 
+}
+
+.card3 p { 
+	color: white; 	
+}
+
+.card3 {
+	/*width: 30%; */
+	/*height: 100%; 
+	margin: auto; */
+	padding-left: 10px; 
+	padding-right: 10px; 
+	justify-content: center; 
+	text-align: center;
+	margin-top: 2%; 
+	margin-bottom: 2%; 
+	padding-top: 1%; 
+}
+
+.card3 h2 {
+	margin-top: 5px; 
+	color: white; 
+}
+
+#rainInfo, #tempInfo, #humidInfo, #powerStoredInfo, #powerOutputInfo {
+	display: block; 
+	text-align: center !important; 
+	background-color: #272a2a; 
+	margin: 0 auto; 
+	
+}
+
+#rainInfo img, #tempInfo img, #humidInfo img, #powerStoredInfo img, #powerOutputInfo img {
+	background-color: white; 
+	margin: 0 auto; 
+	border-radius: 50%; 
+}
+
+
