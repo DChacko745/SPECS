@@ -83,7 +83,7 @@ html {
     text-align: center;
 	  justify-content: center; 
     outline: none;
-    color: black;
+    /*color: black;*/
 	/*box-sizing: border-box; */ 
   }
   .button {
